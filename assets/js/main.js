@@ -21,17 +21,18 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const mainBanner = document.querySelector('.main-banner-swiper');
     if (mainBanner) {
+        const slideCount = mainBanner.querySelectorAll('.swiper-slide').length;
         const bannerSwiper = new Swiper(mainBanner, {
-            loop: true,
-            autoplay: {
+            loop: slideCount > 1,
+            autoplay: slideCount > 1 ? {
                 delay: 4000,
                 disableOnInteraction: false,
-            },
+            } : false,
             speed: 600,
-            pagination: {
+            pagination: slideCount > 1 ? {
                 el: '.main-banner-pagination',
                 clickable: true,
-            },
+            } : false,
         });
 
         const bannerTabs = document.querySelectorAll('.main-banner-tabs [data-banner-slide]');

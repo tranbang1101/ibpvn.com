@@ -248,8 +248,9 @@
         button.addEventListener('click', function () {
             const form = document.createElement('form');
             form.method = 'post';
-            form.action = page.querySelector('#productDetailForm')?.action || (window.location.origin + '/ibpvn.com/cart/add.php');
-            [['product_id', button.dataset.similarBuy], ['quantity', '1'], ['buy_now', '1']].forEach(function (pair) {
+            form.action = page.querySelector('#productDetailForm').action;
+            const csrfToken = page.querySelector('#productDetailForm input[name="_csrf"]')?.value || '';
+            [['_csrf', csrfToken], ['product_id', button.dataset.similarBuy], ['quantity', '1'], ['buy_now', '1']].forEach(function (pair) {
                 const input = document.createElement('input');
                 input.type = 'hidden';
                 input.name = pair[0];

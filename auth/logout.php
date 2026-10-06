@@ -1,6 +1,16 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Method Not Allowed');
+}
+if (!csrf_valid()) {
+    http_response_code(403);
+    exit('Phiên đăng xuất đã hết hạn. Vui lòng tải lại trang và thử lại.');
+}
+
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {

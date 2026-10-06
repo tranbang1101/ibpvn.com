@@ -32,6 +32,25 @@ document.addEventListener('submit', async function (event) {
     }
 });
 
+document.querySelectorAll('.cart-quantity-form').forEach(function (form) {
+    const input = form.querySelector('input[name="quantity"]');
+    if (!input) return;
+
+    form.querySelectorAll('[data-cart-quantity]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const delta = button.dataset.cartQuantity === 'plus' ? 1 : -1;
+            const current = Number.parseInt(input.value, 10) || 1;
+            input.value = String(Math.max(1, Math.min(99, current + delta)));
+            form.requestSubmit();
+        });
+    });
+    input.addEventListener('change', function () {
+        const current = Number.parseInt(input.value, 10) || 1;
+        input.value = String(Math.max(1, Math.min(99, current)));
+        form.requestSubmit();
+    });
+});
+
 function showCartToast(message) {
     let toast = document.querySelector('.cart-toast');
     if (!toast) {

@@ -10,10 +10,18 @@ $categories = [
     'may-lanh' => 'Máy lạnh',
     'phu-kien' => 'Phụ kiện',
 ];
-$categoryKey = trim((string)($_GET['category'] ?? ''));
+$categoryValue = $_GET['category'] ?? '';
+$categoryKey = is_string($categoryValue) ? trim($categoryValue) : '';
 $categoryName = $categories[$categoryKey] ?? '';
-$keyword = trim((string)($_GET['keyword'] ?? ''));
-$sort = (string)($_GET['sort'] ?? 'popular');
+$keywordValue = $_GET['keyword'] ?? '';
+$keyword = is_string($keywordValue) ? trim($keywordValue) : '';
+if (function_exists('mb_substr')) {
+    $keyword = mb_substr($keyword, 0, 120, 'UTF-8');
+} else {
+    $keyword = substr($keyword, 0, 120);
+}
+$sortValue = $_GET['sort'] ?? 'popular';
+$sort = is_string($sortValue) ? $sortValue : 'popular';
 $sortOptions = [
     'popular' => 'Bán chạy',
     'price_asc' => 'Giá thấp đến cao',
@@ -22,6 +30,13 @@ $sortOptions = [
 if (!isset($sortOptions[$sort])) {
     $sort = 'popular';
 }
+$pageValue = $_GET['page'] ?? 1;
+$pageNumber = is_string($pageValue) || is_int($pageValue)
+    ? max(1, (int)(filter_var($pageValue, FILTER_VALIDATE_INT) ?: 1))
+    : 1;
+$pageSize = 12;
+$totalProducts = 0;
+$pageCount = 1;
 
 $products = [];
 $loadError = '';
@@ -49,14 +64,27 @@ if (!$pdo) {
     };
 
     try {
+        $whereClause = ' WHERE ' . implode(' AND ', $conditions);
+        $countStatement = $pdo->prepare('SELECT COUNT(*) FROM product' . $whereClause);
+        $countStatement->execute($parameters);
+        $totalProducts = (int)$countStatement->fetchColumn();
+        $pageCount = max(1, (int)ceil($totalProducts / $pageSize));
+        $pageNumber = min($pageNumber, $pageCount);
+
         $sql = 'SELECT id, slug, ten, danh_muc, thuong_hieu, gia, gia_khuyen_mai, '
             . 'mo_ta_ngan, anh_chinh, rating, so_danh_gia, da_ban '
-            . 'FROM product WHERE ' . implode(' AND ', $conditions)
-            . ' ORDER BY ' . $orderBy;
+            . 'FROM product' . $whereClause
+            . ' ORDER BY ' . $orderBy . ' LIMIT ? OFFSET ?';
         $statement = $pdo->prepare($sql);
-        $statement->execute($parameters);
+        foreach ($parameters as $index => $parameter) {
+            $statement->bindValue($index + 1, $parameter, PDO::PARAM_STR);
+        }
+        $statement->bindValue(count($parameters) + 1, $pageSize, PDO::PARAM_INT);
+        $statement->bindValue(count($parameters) + 2, ($pageNumber - 1) * $pageSize, PDO::PARAM_INT);
+        $statement->execute();
         $products = $statement->fetchAll();
     } catch (PDOException $exception) {
+        error_log('Product catalog lookup failed: ' . $exception->getMessage());
         $loadError = 'Chưa tải được danh sách sản phẩm. Vui lòng thử lại sau.';
     }
 }
@@ -126,7 +154,18 @@ require_once __DIR__ . '/../layouts/header.php';
                 <a class="button-primary" href="<?= BASE_PATH ?>/product/catalog.php">Xem tất cả sản phẩm</a>
             </div>
         <?php else: ?>
-            <p class="catalog-result-count">Hiển thị <?= count($products) ?> sản phẩm</p>
+            <?php
+            $firstProductNumber = ($pageNumber - 1) * $pageSize + 1;
+            $lastProductNumber = $firstProductNumber + count($products) - 1;
+            $paginationQuery = array_filter([
+                'category' => $categoryKey,
+                'keyword' => $keyword,
+                'sort' => $sort === 'popular' ? '' : $sort,
+            ], static fn(string $value): bool => $value !== '');
+            ?>
+            <p class="catalog-result-count">
+                Hiển thị <?= $firstProductNumber ?>–<?= $lastProductNumber ?> trong <?= $totalProducts ?> sản phẩm
+            </p>
             <div class="catalog-grid">
                 <?php foreach ($products as $product): ?>
                     <?php
@@ -139,13 +178,13 @@ require_once __DIR__ . '/../layouts/header.php';
                     <article class="product-card catalog-product-card">
                         <a class="product-card-image" href="<?= BASE_PATH ?>/product/detail.php?id=<?= (int)$product['id'] ?>">
                             <img
-                                src="<?= e($product['anh_chinh'] ?: BASE_PATH . '/assets/images/sanpham.png') ?>"
+                                src="<?= e(asset_url($product['anh_chinh'] ?? null) ?: BASE_PATH . '/assets/images/sanpham.png') ?>"
                                 alt="<?= e($product['ten']) ?>"
                                 loading="lazy"
                             >
                             <?php if ($discount > 0): ?>
                                 <span class="badge-hot">Ưu đãi</span>
-                                <span class="badge-discount"></span>
+                                <span class="badge-discount">-<?= $discount ?>%</span>
                             <?php endif; ?>
                         </a>
                         <div class="product-card-body">
@@ -164,6 +203,7 @@ require_once __DIR__ . '/../layouts/header.php';
                             </div>
                             <div class="product-card-actions">
                                 <form method="post" action="<?= BASE_PATH ?>/cart/add.php" class="card-cart-form">
+                                    <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                                     <input type="hidden" name="product_id" value="<?= (int)$product['id'] ?>">
                                     <button type="submit" class="btn-add-cart">Thêm vào giỏ</button>
                                 </form>
@@ -175,6 +215,17 @@ require_once __DIR__ . '/../layouts/header.php';
                     </article>
                 <?php endforeach; ?>
             </div>
+            <?php if ($pageCount > 1): ?>
+                <nav class="catalog-pagination" aria-label="Phân trang sản phẩm">
+                    <?php if ($pageNumber > 1): ?>
+                        <a href="<?= BASE_PATH ?>/product/catalog.php?<?= e(http_build_query($paginationQuery + ['page' => $pageNumber - 1])) ?>" rel="prev">Trước</a>
+                    <?php endif; ?>
+                    <span>Trang <?= $pageNumber ?> / <?= $pageCount ?></span>
+                    <?php if ($pageNumber < $pageCount): ?>
+                        <a href="<?= BASE_PATH ?>/product/catalog.php?<?= e(http_build_query($paginationQuery + ['page' => $pageNumber + 1])) ?>" rel="next">Tiếp</a>
+                    <?php endif; ?>
+                </nav>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </main>

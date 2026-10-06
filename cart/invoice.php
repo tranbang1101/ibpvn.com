@@ -3,19 +3,49 @@ require_once __DIR__ . '/../config/store.php';
 
 // Bắt buộc người dùng phải đăng nhập trước khi vào trang hóa đơn / thanh toán
 if (empty($_SESSION['user'])) {
-    header('Location: ' . BASE_PATH . '/auth/login.php?redirect=' . urlencode(BASE_PATH . '/cart/invoice.php') . '&msg=checkout_required');
+    $returnTo = BASE_PATH . '/cart/invoice.php';
+    if (($_GET['source'] ?? '') === 'buy-now' && isset($_GET['token'])) {
+        $returnTo .= '?source=buy-now&token=' . rawurlencode((string)$_GET['token']);
+    }
+    header('Location: ' . BASE_PATH . '/auth/login.php?redirect=' . urlencode($returnTo) . '&msg=checkout_required');
     exit;
 }
 
-$buyNow = $_SESSION['buy_now'] ?? null;
+$buyNow = null;
+$pendingBuyNow = $_SESSION['buy_now'] ?? null;
+if (($_GET['source'] ?? '') === 'buy-now') {
+    $tokenValue = $_GET['token'] ?? '';
+    $token = is_string($tokenValue) ? $tokenValue : '';
+    if (
+        is_array($pendingBuyNow)
+        && isset($pendingBuyNow['token'], $pendingBuyNow['created_at'])
+        && hash_equals((string)$pendingBuyNow['token'], $token)
+        && (int)$pendingBuyNow['created_at'] >= time() - 1800
+    ) {
+        $buyNow = $pendingBuyNow;
+    } else {
+        unset($_SESSION['buy_now']);
+        header('Location: ' . BASE_PATH . '/cart/index.php?error=buy_now_expired');
+        exit;
+    }
+} else {
+    unset($_SESSION['buy_now']);
+}
+if (!db()) {
+    header('Location: ' . BASE_PATH . '/cart/index.php?error=database');
+    exit;
+}
 $cart = $buyNow
     ? [(int)$buyNow['product_id'] => max(1, min(99, (int)$buyNow['quantity']))]
     : ($_SESSION['cart'] ?? []);
 $products = $buyNow ? [] : cart_products();
 if ($buyNow && db()) {
     $stmt = db()->prepare(
-        'SELECT id, ten, gia, gia_khuyen_mai, anh_chinh, so_luong_ton '
-        . 'FROM product WHERE id = ? AND hien_thi = 1'
+        'SELECT p.id, p.ten, p.gia, p.gia_khuyen_mai, p.anh_chinh, p.so_luong_ton, '
+        . 'COALESCE(d.phi_giao_hang, 0) AS phi_giao_hang, '
+        . 'COALESCE(d.giao_hang_mien_phi, 1) AS giao_hang_mien_phi '
+        . 'FROM product p LEFT JOIN productdetail d ON d.product_id = p.id '
+        . 'WHERE p.id = ? AND p.hien_thi = 1'
     );
     $stmt->execute([(int)$buyNow['product_id']]);
     $row = $stmt->fetch();
@@ -34,13 +64,35 @@ if (!$cart || !$products) {
 
 $lines = [];
 $subtotal = 0.0;
+$selectionError = '';
 foreach ($products as $id => $product) {
     $quantity = max(1, min(99, (int)($cart[$id] ?? 1)));
     $selection = $buyNow && (int)$buyNow['product_id'] === (int)$id
         ? $buyNow
         : ($_SESSION['cart_options'][$id] ?? []);
-    $variant = cart_variant((int)$id, (int)($selection['variant_id'] ?? 0));
-    $addons = cart_addons((int)$id, $selection['addon_ids'] ?? []);
+    if (!is_array($selection)) {
+        $selection = [];
+    }
+    $variantValue = $selection['variant_id'] ?? 0;
+    $selectedVariantId = is_scalar($variantValue) ? max(0, (int)$variantValue) : 0;
+    $addonValues = $selection['addon_ids'] ?? [];
+    $selectedAddonIds = [];
+    if (is_array($addonValues)) {
+        foreach ($addonValues as $addonValue) {
+            if (is_string($addonValue) || is_int($addonValue)) {
+                $selectedAddonIds[] = (int)$addonValue;
+            }
+        }
+    }
+    $selectedAddonIds = array_values(array_unique(array_filter($selectedAddonIds, static fn(int $id): bool => $id > 0)));
+    $variant = cart_variant((int)$id, $selectedVariantId);
+    $addons = cart_addons((int)$id, $selectedAddonIds);
+    if ($selectedVariantId > 0 && !$variant) {
+        $selectionError = 'Phiên bản đã chọn không còn khả dụng. Vui lòng quay lại giỏ hàng và chọn lại.';
+    }
+    if (count($addons) !== count($selectedAddonIds)) {
+        $selectionError = 'Một hoặc nhiều phụ kiện đã chọn không còn khả dụng. Vui lòng quay lại giỏ hàng và chọn lại.';
+    }
     $variantPrice = (!empty($variant) && !empty($variant['gia'])) ? (float)$variant['gia'] : 0.0;
     $unitPrice = $variantPrice > 0 ? $variantPrice : (float)(!empty($product['gia_khuyen_mai']) ? $product['gia_khuyen_mai'] : $product['gia']);
     $subtotal += $unitPrice * $quantity;
@@ -49,16 +101,36 @@ foreach ($products as $id => $product) {
     }
     $lines[(int)$id] = compact('product', 'quantity', 'selection', 'variant', 'addons', 'unitPrice');
 }
-$shipping = 0.0;
+$shipping = cart_shipping($products);
 $total = $subtotal + $shipping;
-$error = '';
+$error = $selectionError;
+$formName = is_string($_POST['name'] ?? null)
+    ? trim($_POST['name'])
+    : (string)($_SESSION['user']['name'] ?? '');
+$formEmail = is_string($_POST['email'] ?? null)
+    ? trim($_POST['email'])
+    : (string)($_SESSION['user']['email'] ?? '');
+$formPhone = is_string($_POST['phone'] ?? null) ? trim($_POST['phone']) : '';
+$formAddress = is_string($_POST['address'] ?? null) ? trim($_POST['address']) : '';
+$formNote = is_string($_POST['note'] ?? null) ? trim($_POST['note']) : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $address = trim($_POST['address'] ?? '');
-    if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $phone === '' || $address === '') {
+    $name = $formName;
+    $email = $formEmail;
+    $phone = $formPhone;
+    $address = $formAddress;
+    if ($selectionError !== '') {
+        $error = $selectionError;
+    } elseif (!csrf_valid()) {
+        $error = 'Phiên đặt hàng đã hết hạn. Vui lòng tải lại trang và thử lại.';
+    } elseif (
+        $name === ''
+        || text_length($name) > 150
+        || !filter_var($email, FILTER_VALIDATE_EMAIL)
+        || text_length($email) > 190
+        || !valid_phone($phone)
+        || $address === ''
+    ) {
         $error = 'Vui lòng điền đầy đủ và chính xác thông tin nhận hàng.';
     } elseif (!db()) {
         $error = 'Chưa kết nối được cơ sở dữ liệu. Hãy import database/ibpvn.sql trong phpMyAdmin trước.';
@@ -93,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $subtotal,
                 $shipping,
                 $total,
-                trim($_POST['note'] ?? ''),
+                $formNote,
             ]);
             $orderId = (int)db()->lastInsertId();
             $insertLine = db()->prepare(
@@ -160,7 +232,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (db()->inTransaction()) {
                 db()->rollBack();
             }
-            $error = 'Chưa thể tạo đơn hàng. Vui lòng thử lại hoặc liên hệ IBP.';
+            if ($exception instanceof RuntimeException) {
+                $error = 'Tồn kho vừa thay đổi nên chưa thể đặt đơn với số lượng này. Vui lòng kiểm tra lại giỏ hàng.';
+            } else {
+                error_log('Checkout failed: ' . $exception->getMessage());
+                $error = 'Chưa thể tạo đơn hàng. Vui lòng thử lại hoặc liên hệ IBP.';
+            }
         }
     }
 }
@@ -193,12 +270,16 @@ require_once __DIR__ . '/../layouts/header.php';
                         <?= e($error) ?>
                     </div>
                 <?php endif; ?>
+                <?php if ($selectionError !== ''): ?>
+                    <a class="button-primary" href="<?= BASE_PATH ?>/cart/index.php">Quay lại giỏ hàng</a>
+                <?php else: ?>
                 <form method="post" class="checkout-form">
+                    <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                     <label>
                         Họ và tên
                         <input
                             name="name"
-                            value="<?= e($_POST['name'] ?? ($_SESSION['user']['name'] ?? '')) ?>"
+                            value="<?= e($formName) ?>"
                             autocomplete="name"
                             required
                         >
@@ -209,7 +290,7 @@ require_once __DIR__ . '/../layouts/header.php';
                             <input
                                 type="email"
                                 name="email"
-                                value="<?= e($_POST['email'] ?? ($_SESSION['user']['email'] ?? '')) ?>"
+                                value="<?= e($formEmail) ?>"
                                 autocomplete="email"
                                 required
                             >
@@ -219,7 +300,7 @@ require_once __DIR__ . '/../layouts/header.php';
                             <input
                                 type="tel"
                                 name="phone"
-                                value="<?= e($_POST['phone'] ?? '') ?>"
+                                value="<?= e($formPhone) ?>"
                                 autocomplete="tel"
                                 required
                             >
@@ -229,7 +310,7 @@ require_once __DIR__ . '/../layouts/header.php';
                         Địa chỉ nhận hàng
                         <input
                             name="address"
-                            value="<?= e($_POST['address'] ?? '') ?>"
+                            value="<?= e($formAddress) ?>"
                             placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành"
                             autocomplete="street-address"
                             required
@@ -237,7 +318,7 @@ require_once __DIR__ . '/../layouts/header.php';
                     </label>
                     <label>
                         Ghi chú đơn hàng <span>(không bắt buộc)</span>
-                        <textarea name="note" rows="3" placeholder="Hướng dẫn giao hàng hoặc lắp đặt"><?= e($_POST['note'] ?? '') ?></textarea>
+                        <textarea name="note" rows="3" placeholder="Hướng dẫn giao hàng hoặc lắp đặt"><?= e($formNote) ?></textarea>
                     </label>
                     <button class="button-primary checkout-button" type="submit">
                         Xác nhận đặt hàng · <?= money($total) ?> <i class="bi bi-arrow-right"></i>
@@ -247,13 +328,14 @@ require_once __DIR__ . '/../layouts/header.php';
                     <i class="bi bi-lock"></i>
                     Thông tin của bạn được bảo mật và chỉ dùng để xử lý đơn hàng.
                 </div>
+                <?php endif; ?>
             </section>
             <aside class="detail-card checkout-summary">
                 <h2>Chi tiết hóa đơn</h2>
                 <?php foreach ($lines as $id => $line): ?>
                     <div class="checkout-product">
                         <img
-                            src="<?= e($line['product']['anh_chinh'] ?: BASE_PATH . '/assets/images/sanpham.png') ?>"
+                            src="<?= e(asset_url($line['product']['anh_chinh'] ?? null) ?: BASE_PATH . '/assets/images/sanpham.png') ?>"
                             alt=""
                         >
                         <span>
@@ -269,7 +351,7 @@ require_once __DIR__ . '/../layouts/header.php';
                         <?php $addonPrice = (float)($addon['gia_khuyen_mai'] ?: $addon['gia_goc']); ?>
                         <div class="checkout-product invoice-addon">
                             <img
-                                src="<?= e($addon['image_url'] ?: BASE_PATH . '/assets/images/loiloc.png') ?>"
+                                src="<?= e(asset_url($addon['image_url'] ?? null) ?: BASE_PATH . '/assets/images/loiloc.png') ?>"
                                 alt=""
                             >
                             <span>
@@ -286,7 +368,7 @@ require_once __DIR__ . '/../layouts/header.php';
                 </div>
                 <div class="summary-row">
                     <span>Giao hàng</span>
-                    <b class="free-shipping">Miễn phí</b>
+                    <b><?= $shipping > 0 ? money($shipping) : 'Miễn phí' ?></b>
                 </div>
                 <div class="summary-row summary-total">
                     <span>Tổng cộng</span>

@@ -25,30 +25,30 @@ $headerUsername = is_array($headerUser)
     <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/fancybox.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style.css?v=10">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/shop.css?v=8">
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/shop.css?v=9">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style-responsive.css?v=14">
 </head>
 <body>
 <!-- ==================== HEADER ==================== -->
     <header class="site-header">
         <div class="header-banner">
-            <a href="#" class="header-banner-link">
+            <a href="<?= BASE_PATH ?>/product/catalog.php" class="header-banner-link">
                 <img src="<?= BASE_PATH ?>/assets/images/header_promotion.png" alt="Đặt hàng Online - Nhận ngay ưu đãi" class="header-banner-image">
             </a>
         </div>
         <div class="header-top">
             <div class="header-top-inner">
-                <div class="header-top-message">Đăng ký - Đăng nhập thành viên hôm nay giảm 10% cho khách</div>
+                <div class="header-top-message">Đăng nhập để theo dõi đơn hàng và nhận hỗ trợ từ IBP</div>
                 <div class="header-top-links">
-                    <a href="#" class="header-top-link">
+                    <a href="mailto:info@ibpvn.com?subject=Dealer%20application" class="header-top-link">
                         <iconify-icon icon="fa7-solid:hands-holding-child" class="header-top-icon"></iconify-icon>
                         <span>Tuyển đại lý</span>
                     </a>
-                    <a href="#" class="header-top-link">
+                    <a href="<?= BASE_PATH ?>/home/home.php#about" class="header-top-link">
                         <iconify-icon icon="solar:document-text-outline" class="header-top-icon"></iconify-icon>
                         <span>Giới thiệu</span>
                     </a>
-                    <a href="#" class="header-top-link">
+                    <a href="<?= BASE_PATH ?>/contact.php" class="header-top-link">
                         <iconify-icon icon="solar:headphones-round-outline" class="header-top-icon"></iconify-icon>
                         <span>Liên hệ</span>
                     </a>
@@ -81,7 +81,7 @@ $headerUsername = is_array($headerUser)
                 </form>
                 <button class="mobile-search-toggle" type="button" aria-label="Tìm kiếm" aria-expanded="false"><i class="bi bi-search" aria-hidden="true"></i></button>
                 <div class="header-actions">
-                    <a href="<?= BASE_PATH ?>/cart/index.php" class="header-action header-order-check">
+                    <a href="<?= BASE_PATH ?>/cart/track.php" class="header-action header-order-check">
                         <i class="bi bi-file-earmark-text header-action-icon"></i>
                         <span class="header-action-text">Kiểm tra đơn hàng</span>
                     </a>
@@ -91,11 +91,10 @@ $headerUsername = is_array($headerUser)
                             <span class="header-action-text header-account-name" style="font-weight:600;">
                                 <?= htmlspecialchars((string)$headerUsername, ENT_QUOTES, 'UTF-8') ?>
                             </span>
-                            <a
-                                href="<?= BASE_PATH ?>/auth/logout.php"
-                                style="color:#d9534f;font-size:11px;margin-left:4px;text-decoration:none;font-weight:bold;"
-                                title="Đăng xuất"
-                            >(Thoát)</a>
+                            <form action="<?= BASE_PATH ?>/auth/logout.php" method="post" style="display:inline;margin-left:4px;">
+                                <input type="hidden" name="_csrf" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+                                <button type="submit" style="padding:0;border:0;background:none;color:#d9534f;font-size:11px;text-decoration:none;font-weight:bold;cursor:pointer;" title="Đăng xuất">(Thoát)</button>
+                            </form>
                         </div>
                     <?php else: ?>
                         <a href="<?= BASE_PATH ?>/auth/login.php" class="header-action header-account">
@@ -125,7 +124,7 @@ $headerUsername = is_array($headerUser)
         <!-- ==================== MENU NAV ==================== -->
         <nav class="header-navigation">
             <div class="header-navigation-inner">
-                <a href="<?= BASE_PATH ?>/contact.php" class="navigation-item"><span>Giới thiệu</span></a>
+                <a href="<?= BASE_PATH ?>/home/home.php#about" class="navigation-item"><span>Giới thiệu</span></a>
                 <span class="navigation-divider"></span>
                 <a href="<?= BASE_PATH ?>/product/catalog.php?category=may-loc-nuoc" class="navigation-item"><span>Máy lọc nước</span></a>
                 <span class="navigation-divider"></span>
@@ -141,7 +140,7 @@ $headerUsername = is_array($headerUser)
                 <span class="navigation-divider"></span>
                 <a href="<?= BASE_PATH ?>/product/catalog.php?category=phu-kien" class="navigation-item"><span>Phụ kiện</span></a>
                 <span class="navigation-divider"></span>
-                <a href="<?= BASE_PATH ?>/contact.php" class="navigation-item"><span>Cẩm nang</span></a>
+                <a href="<?= BASE_PATH ?>/news/detail.php" class="navigation-item"><span>Cẩm nang</span></a>
                 <span class="navigation-divider"></span>
                 <a href="<?= BASE_PATH ?>/contact.php" class="navigation-item"><span>Liên hệ</span></a>
             </div>

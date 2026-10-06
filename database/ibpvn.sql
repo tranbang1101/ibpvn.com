@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS danh_gia (
 ) ENGINE=InnoDB;
 
 INSERT INTO product (slug, ten, danh_muc, thuong_hieu, gia, gia_khuyen_mai, mo_ta_ngan, anh_chinh, rating, so_danh_gia, so_luong_ton, da_ban)
-VALUES ('may-loc-nuoc-ao-smith-ross-eco-aoc75pur', 'Máy lọc nước A. O. Smith ROSS™ ECO-AOC75PUR', 'Máy lọc nước', 'A. O. Smith', 14500000, 12150000, 'Công nghệ lọc RO Side Stream, thiết kế tinh gọn cho nguồn nước an tâm mỗi ngày.', '/ibpvn.com/assets/images/sanpham.png', 4.8, 28, 12, 128)
+VALUES ('may-loc-nuoc-ao-smith-ross-eco-aoc75pur', 'Máy lọc nước A. O. Smith ROSS™ ECO-AOC75PUR', 'Máy lọc nước', 'A. O. Smith', 14500000, 12150000, 'Công nghệ lọc RO Side Stream, thiết kế tinh gọn cho nguồn nước an tâm mỗi ngày.', '/ibpvn.com/assets/images/sanpham.png', 0, 0, 12, 0)
 ON DUPLICATE KEY UPDATE
     id = LAST_INSERT_ID(id),
     ten = VALUES(ten),
@@ -153,25 +153,25 @@ ON DUPLICATE KEY UPDATE
     gia = VALUES(gia),
     gia_khuyen_mai = VALUES(gia_khuyen_mai),
     mo_ta_ngan = VALUES(mo_ta_ngan),
-    anh_chinh = VALUES(anh_chinh),
-    rating = VALUES(rating),
-    so_danh_gia = VALUES(so_danh_gia),
-    so_luong_ton = VALUES(so_luong_ton),
-    da_ban = VALUES(da_ban);
+    anh_chinh = VALUES(anh_chinh);
 
 SET @sample_product_id = LAST_INSERT_ID();
 
 INSERT INTO product (slug, ten, danh_muc, thuong_hieu, gia, gia_khuyen_mai, mo_ta_ngan, anh_chinh, rating, so_danh_gia, so_luong_ton, da_ban)
-VALUES ('may-loc-nuoc-ao-smith-a2', 'Máy Lọc Nước A. O. Smith A2', 'Máy lọc nước', 'AO Smith', 12600000, 9200000, 'Máy lọc nước A. O. Smith A2 với công nghệ lọc tiên tiến, mang đến nguồn nước tinh khiết cho gia đình.', '/ibpvn.com/assets/images/maylocnuoc-a.o.smith.png', 4.9, 20, 12, 231)
+VALUES ('may-loc-nuoc-ao-smith-a2', 'Máy Lọc Nước A. O. Smith A2', 'Máy lọc nước', 'AO Smith', 12600000, 9200000, 'Máy lọc nước A. O. Smith A2 với công nghệ lọc tiên tiến, mang đến nguồn nước tinh khiết cho gia đình.', '/ibpvn.com/assets/images/maylocnuoc-a.o.smith.png', 0, 0, 12, 0)
 ON DUPLICATE KEY UPDATE
     id = LAST_INSERT_ID(id), ten = VALUES(ten), danh_muc = VALUES(danh_muc), thuong_hieu = VALUES(thuong_hieu),
-    gia = VALUES(gia), gia_khuyen_mai = VALUES(gia_khuyen_mai), mo_ta_ngan = VALUES(mo_ta_ngan), anh_chinh = VALUES(anh_chinh),
-    rating = VALUES(rating), so_danh_gia = VALUES(so_danh_gia), so_luong_ton = VALUES(so_luong_ton), da_ban = VALUES(da_ban);
+    gia = VALUES(gia), gia_khuyen_mai = VALUES(gia_khuyen_mai), mo_ta_ngan = VALUES(mo_ta_ngan), anh_chinh = VALUES(anh_chinh);
 SET @sample_product_id = LAST_INSERT_ID();
 
 INSERT INTO productdetail (product_id, mo_ta_chi_tiet, thong_so_ky_thuat, bao_hanh, giao_hang_mien_phi, thong_tin_uu_dai)
-VALUES (@sample_product_id, 'Máy lọc nước A. O. Smith A2 kết hợp công nghệ lọc hiện đại và thiết kế gọn đẹp. Sản phẩm hỗ trợ nguồn nước sạch cho sinh hoạt hằng ngày.', '{"Mã sản phẩm":"TRIM ION US-100L","Xuất xứ":"Mỹ","Số cấp lọc":"7 cấp lọc","Chức năng":"Nước thường","Điện áp đầu vào":"AC 220V / 50Hz","Công suất (tổng)":"85 W","Áp suất nước đầu vào phù hợp":"0.1MPa ~ 0.35MPa","Nhiệt độ nước cấp":"5~38°C","Công suất lọc/phút":"1.1 L/phút","Phương pháp lọc rửa":"Tự động làm sạch"}', '24 tháng', 1, 'Lắp thêm lõi lọc nước ion kiềm alkaline hydrogen nhập khẩu Hàn Quốc chỉ 500.000đ; tặng thiết bị kiểm tra TDS và hỗ trợ lắp đặt.')
-ON DUPLICATE KEY UPDATE mo_ta_chi_tiet = VALUES(mo_ta_chi_tiet), thong_so_ky_thuat = VALUES(thong_so_ky_thuat), bao_hanh = VALUES(bao_hanh), giao_hang_mien_phi = VALUES(giao_hang_mien_phi), thong_tin_uu_dai = VALUES(thong_tin_uu_dai);
+VALUES (@sample_product_id, 'Máy lọc nước A. O. Smith A2 với thiết kế dành cho nhu cầu sử dụng trong gia đình. Vui lòng liên hệ IBP để được xác nhận thông số, bảo hành và lắp đặt theo khu vực.', NULL, NULL, 1, NULL)
+ON DUPLICATE KEY UPDATE
+    mo_ta_chi_tiet = VALUES(mo_ta_chi_tiet),
+    thong_so_ky_thuat = VALUES(thong_so_ky_thuat),
+    bao_hanh = VALUES(bao_hanh),
+    giao_hang_mien_phi = VALUES(giao_hang_mien_phi),
+    thong_tin_uu_dai = VALUES(thong_tin_uu_dai);
 
 -- Data supplement for the A. O. Smith A2 product detail page.
 CREATE TABLE IF NOT EXISTS product_addons (
@@ -218,49 +218,26 @@ INSERT INTO product_images (product_id, image_url, alt_text, thu_tu) VALUES
 (@sample_product_id, '/ibpvn.com/assets/images/a.o.smith-mini2.png', 'Chi tiết máy lọc nước A. O. Smith A2', 2),
 (@sample_product_id, '/ibpvn.com/assets/images/a.o.smith-mini3.png', 'Mặt trước máy lọc nước A. O. Smith A2', 3);
 
-INSERT INTO product_variants (product_id, ten_phien_ban, image_url, sku, gia)
-VALUES
-(@sample_product_id, 'Denon HEOS 5 HS2', '/ibpvn.com/assets/images/a.o.smith-mini1.png', 'A2-HS2', NULL),
-(@sample_product_id, 'Denon HEOS 6 KT3', '/ibpvn.com/assets/images/a.o.smith-mini2.png', 'A2-KT3', NULL),
-(@sample_product_id, 'Denon HEOS 7 BK1', '/ibpvn.com/assets/images/a.o.smith-mini3.png', 'A2-BK1', NULL)
-ON DUPLICATE KEY UPDATE product_id = VALUES(product_id), ten_phien_ban = VALUES(ten_phien_ban), image_url = VALUES(image_url), gia = VALUES(gia);
+DELETE FROM product_variants
+WHERE product_id = @sample_product_id AND sku IN ('A2-HS2', 'A2-KT3', 'A2-BK1');
 
-INSERT INTO product_addons (product_id, ten, image_url, gia_goc, gia_khuyen_mai, thu_tu)
-VALUES
-(@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 1', '/ibpvn.com/assets/images/loiloc.png', 350000, 300000, 1),
-(@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 2', '/ibpvn.com/assets/images/loiloc.png', 350000, 300000, 2),
-(@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 3', '/ibpvn.com/assets/images/loiloc.png', 350000, 300000, 3),
-(@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 4', '/ibpvn.com/assets/images/loiloc.png', 350000, 300000, 4)
-ON DUPLICATE KEY UPDATE image_url = VALUES(image_url), gia_goc = VALUES(gia_goc), gia_khuyen_mai = VALUES(gia_khuyen_mai), thu_tu = VALUES(thu_tu), hien_thi = 1;
+DELETE FROM product_addons
+WHERE product_id = @sample_product_id
+  AND ten IN (
+      'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 1',
+      'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 2',
+      'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 3',
+      'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 4'
+  );
 
-INSERT INTO product_faq (product_id, cau_hoi, cau_tra_loi, thu_tu)
-VALUES
-(@sample_product_id, 'Sản phẩm được bảo hành trong bao lâu?', 'Máy lọc nước A. O. Smith A2 được bảo hành chính hãng 24 tháng theo điều kiện của nhà sản xuất.', 1),
-(@sample_product_id, 'IBP có hỗ trợ lắp đặt tại nhà không?', 'Có. Kỹ thuật viên sẽ liên hệ xác nhận địa chỉ và thời gian lắp đặt thuận tiện cho bạn.', 2),
-(@sample_product_id, 'Khi nào cần thay lõi lọc?', 'Chu kỳ thay lõi phụ thuộc vào chất lượng nguồn nước và lượng nước sử dụng. IBP hỗ trợ kiểm tra và nhắc lịch thay lõi.', 3),
-(@sample_product_id, 'Sản phẩm có giao hàng miễn phí không?', 'IBP giao hàng miễn phí theo chương trình áp dụng và sẽ xác nhận phí phát sinh (nếu có) trước khi giao.', 4),
-(@sample_product_id, 'Làm thế nào để được tư vấn chọn lõi lọc?', 'Gọi 0983 537 155 hoặc gửi câu hỏi qua Zalo để đội ngũ IBP tư vấn theo nhu cầu sử dụng.', 5)
-ON DUPLICATE KEY UPDATE cau_tra_loi = VALUES(cau_tra_loi), thu_tu = VALUES(thu_tu), hien_thi = 1;
+DELETE FROM product_faq
+WHERE product_id = @sample_product_id
+  AND cau_hoi IN (
+      'Sản phẩm được bảo hành trong bao lâu?',
+      'IBP có hỗ trợ lắp đặt tại nhà không?',
+      'Khi nào cần thay lõi lọc?',
+      'Sản phẩm có giao hàng miễn phí không?',
+      'Làm thế nào để được tư vấn chọn lõi lọc?'
+  );
 
 DELETE FROM danh_gia WHERE product_id = @sample_product_id AND user_id IS NULL AND ten_hien_thi IN ('Sơn Tùng', 'Nguyễn Quốc', 'Tiến Thịnh', 'Minh Anh', 'Thanh Hà', 'Quốc Bảo', 'Thu Trang', 'Hoàng Nam', 'Bảo Ngọc', 'Hữu Phước', 'Kim Oanh', 'Gia Huy', 'Tú Anh', 'Đình Khang', 'Ngọc Châu', 'Đức Anh', 'Phương Uyên', 'Hải Yến', 'Văn Long', 'Quỳnh Mai');
-INSERT INTO danh_gia (product_id, user_id, ten_hien_thi, so_sao, noi_dung, trang_thai) VALUES
-(@sample_product_id, NULL, 'Sơn Tùng', 5, 'Dịch vụ mua hàng nhanh chóng và hỗ trợ tốt.', 1),
-(@sample_product_id, NULL, 'Nguyễn Quốc', 5, 'Máy chạy ổn định, nhân viên lắp đặt rất chu đáo.', 1),
-(@sample_product_id, NULL, 'Tiến Thịnh', 5, 'Nguồn nước có vị dễ uống, tư vấn sau mua rất nhanh.', 1),
-(@sample_product_id, NULL, 'Minh Anh', 5, 'Thiết kế gọn, hoạt động êm và dễ sử dụng.', 1),
-(@sample_product_id, NULL, 'Thanh Hà', 5, 'Giao hàng đúng hẹn, kỹ thuật viên hướng dẫn rõ ràng.', 1),
-(@sample_product_id, NULL, 'Quốc Bảo', 5, 'Sản phẩm chính hãng, đóng gói cẩn thận.', 1),
-(@sample_product_id, NULL, 'Thu Trang', 5, 'Đội ngũ tư vấn nhiệt tình, hỗ trợ chọn máy phù hợp.', 1),
-(@sample_product_id, NULL, 'Hoàng Nam', 5, 'Máy lọc nhanh, nước trong và không có mùi lạ.', 1),
-(@sample_product_id, NULL, 'Bảo Ngọc', 5, 'Lắp đặt gọn gàng, nhân viên thân thiện.', 1),
-(@sample_product_id, NULL, 'Hữu Phước', 5, 'Đã sử dụng một thời gian và rất hài lòng.', 1),
-(@sample_product_id, NULL, 'Kim Oanh', 5, 'Mua hàng thuận tiện, được hướng dẫn bảo dưỡng đầy đủ.', 1),
-(@sample_product_id, NULL, 'Gia Huy', 5, 'Máy đẹp, chạy êm, giao hàng nhanh.', 1),
-(@sample_product_id, NULL, 'Tú Anh', 5, 'Nhân viên lắp đặt cẩn thận, hướng dẫn sử dụng dễ hiểu.', 1),
-(@sample_product_id, NULL, 'Đình Khang', 5, 'Máy hoạt động tốt, tư vấn đúng nhu cầu gia đình.', 1),
-(@sample_product_id, NULL, 'Ngọc Châu', 5, 'Nước uống ngon, giao hàng nhanh và đúng lịch hẹn.', 1),
-(@sample_product_id, NULL, 'Đức Anh', 5, 'Thiết kế đẹp, dùng thuận tiện mỗi ngày.', 1),
-(@sample_product_id, NULL, 'Phương Uyên', 5, 'Chất lượng tốt, đội ngũ hỗ trợ nhiệt tình.', 1),
-(@sample_product_id, NULL, 'Hải Yến', 5, 'Lắp đặt nhanh, khu vực sử dụng được vệ sinh gọn gàng.', 1),
-(@sample_product_id, NULL, 'Văn Long', 5, 'Máy chạy êm và dịch vụ sau mua chu đáo.', 1),
-(@sample_product_id, NULL, 'Quỳnh Mai', 5, 'Tư vấn rõ ràng, hỗ trợ bảo hành nhanh.', 1);

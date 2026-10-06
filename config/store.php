@@ -5,12 +5,16 @@ function cart_products(): array
 {
     $cart = $_SESSION['cart'] ?? [];
     $ids = array_values(array_filter(array_map('intval', array_keys($cart))));
+    $database = db();
 
-    if ($ids && db()) {
+    if ($ids && $database) {
         $marks = implode(',', array_fill(0, count($ids), '?'));
-        $stmt = db()->prepare(
-            "SELECT id, ten, gia, gia_khuyen_mai, anh_chinh, so_luong_ton "
-            . "FROM product WHERE id IN ($marks) AND hien_thi = 1"
+        $stmt = $database->prepare(
+            "SELECT p.id, p.ten, p.gia, p.gia_khuyen_mai, p.anh_chinh, p.so_luong_ton, "
+            . "COALESCE(d.phi_giao_hang, 0) AS phi_giao_hang, "
+            . "COALESCE(d.giao_hang_mien_phi, 1) AS giao_hang_mien_phi "
+            . "FROM product p LEFT JOIN productdetail d ON d.product_id = p.id "
+            . "WHERE p.id IN ($marks) AND p.hien_thi = 1"
         );
         $stmt->execute($ids);
 
@@ -32,36 +36,21 @@ function cart_products(): array
         return $products;
     }
 
-    $products = [];
-    foreach ($ids as $id) {
-        if ($id === 1) {
-            $products[$id] = [
-                'id' => 1,
-                'ten' => 'Máy lọc nước A. O. Smith ROSS™ ECO-AOC75PUR',
-                'gia' => 14500000,
-                'gia_khuyen_mai' => 12150000,
-                'anh_chinh' => BASE_PATH . '/assets/images/sanpham.png',
-                'so_luong_ton' => 12,
-            ];
-        } else {
-            $products[$id] = [
-                'id' => $id,
-                'ten' => 'Máy lọc nước A. O. Smith A2',
-                'gia' => 12600000,
-                'gia_khuyen_mai' => 9200000,
-                'anh_chinh' => BASE_PATH . '/assets/images/maylocnuoc-a.o.smith.png',
-                'so_luong_ton' => 12,
-            ];
-        }
-    }
-
-    return $products;
+    return [];
 }
 
 function cart_addons(int $productId, ?array $optionIds = null): array
 {
-    $ids = $optionIds ?? ($_SESSION['cart_options'][$productId]['addon_ids'] ?? []);
-    $ids = array_values(array_filter(array_map('intval', $ids)));
+    $storedOptions = $_SESSION['cart_options'][$productId] ?? [];
+    $storedAddonIds = is_array($storedOptions) ? ($storedOptions['addon_ids'] ?? []) : [];
+    $ids = $optionIds ?? $storedAddonIds;
+    if (!is_array($ids)) {
+        return [];
+    }
+    $ids = array_values(array_unique(array_filter(array_map(
+        static fn($id): int => is_scalar($id) ? (int)$id : 0,
+        $ids
+    ), static fn(int $id): bool => $id > 0)));
 
     if (!$ids || !db()) {
         return [];
@@ -79,13 +68,17 @@ function cart_addons(int $productId, ?array $optionIds = null): array
 
         return $stmt->fetchAll();
     } catch (PDOException $exception) {
-        return [];
+        error_log('Cart add-on lookup failed: ' . $exception->getMessage());
+        throw $exception;
     }
 }
 
 function cart_variant(int $productId, ?int $variantId = null): ?array
 {
-    $id = $variantId ?? (int)($_SESSION['cart_options'][$productId]['variant_id'] ?? 0);
+    $storedOptions = $_SESSION['cart_options'][$productId] ?? [];
+    $storedVariantId = is_array($storedOptions) ? ($storedOptions['variant_id'] ?? 0) : 0;
+    $idValue = $variantId ?? $storedVariantId;
+    $id = is_scalar($idValue) ? (int)$idValue : 0;
 
     if (!$id || !db()) {
         return null;
@@ -100,7 +93,8 @@ function cart_variant(int $productId, ?int $variantId = null): ?array
 
         return $stmt->fetch() ?: null;
     } catch (PDOException $exception) {
-        return null;
+        error_log('Cart variant lookup failed: ' . $exception->getMessage());
+        throw $exception;
     }
 }
 
@@ -131,6 +125,18 @@ function cart_total(array $products): float
     }
 
     return $sum;
+}
+
+function cart_shipping(array $products): float
+{
+    $shipping = 0.0;
+    foreach ($products as $product) {
+        if (empty($product['giao_hang_mien_phi'])) {
+            $shipping = max($shipping, max(0.0, (float)($product['phi_giao_hang'] ?? 0)));
+        }
+    }
+
+    return $shipping;
 }
 
 function money(float $amount): string

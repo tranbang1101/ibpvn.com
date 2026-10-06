@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-$redirect = $_GET['redirect'] ?? ($_POST['redirect'] ?? '');
+$redirectValue = $_GET['redirect'] ?? ($_POST['redirect'] ?? '');
+$redirect = is_string($redirectValue) ? $redirectValue : '';
 if (!empty($_SESSION['user'])) {
-    $dest = (!empty($redirect) && str_starts_with($redirect, BASE_PATH)) ? $redirect : (BASE_PATH . '/home/home.php');
+    $dest = is_safe_local_redirect($redirect) ? $redirect : (BASE_PATH . '/home/home.php');
     header('Location: ' . $dest);
     exit;
 }
@@ -14,12 +15,18 @@ if (($_GET['msg'] ?? '') === 'checkout_required') {
     $notice = 'Quý khách vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục thanh toán đơn hàng.';
 }
 
-$username = trim($_POST['username'] ?? '');
+$usernameValue = $_POST['username'] ?? '';
+$username = is_string($usernameValue) ? trim($usernameValue) : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $password = $_POST['password'] ?? '';
+    $passwordValue = $_POST['password'] ?? '';
+    $password = is_string($passwordValue) ? $passwordValue : '';
 
-    if (!db()) {
+    if (!csrf_valid()) {
+        $error = 'Phiên đăng nhập đã hết hạn. Vui lòng tải lại trang và thử lại.';
+    } elseif ($username === '' || text_length($username) > 190 || $password === '') {
+        $error = 'Vui lòng nhập tên đăng nhập/email và mật khẩu hợp lệ.';
+    } elseif (!db()) {
         $error = 'Chưa kết nối được cơ sở dữ liệu. Hãy kiểm tra database/ibpvn.sql trong phpMyAdmin.';
     } else {
         try {
@@ -39,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($matchedUser) {
                 session_regenerate_id(true);
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['user'] = [
                     'id' => (int)$matchedUser['id'],
                     'name' => $matchedUser['ho_ten'],
@@ -46,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'email' => $matchedUser['email'],
                 ];
 
-                $dest = (!empty($redirect) && str_starts_with($redirect, BASE_PATH))
+                $dest = is_safe_local_redirect($redirect)
                     ? $redirect
                     : (BASE_PATH . '/home/home.php');
 
@@ -56,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $error = 'Tên người dùng hoặc mật khẩu chưa chính xác.';
         } catch (PDOException $exception) {
+            error_log('Login failed: ' . $exception->getMessage());
             $error = 'Không thể đăng nhập lúc này. Vui lòng thử lại sau.';
         }
     }
@@ -70,7 +79,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <img src="<?= BASE_PATH ?>/assets/images/logo_IBP.png" alt="IBP Technology">
             <span class="auth-eyebrow">WELCOME BACK</span>
             <h1>Giải pháp nước tốt hơn bắt đầu từ đây.</h1>
-            <p>Đăng nhập để quản lý đơn hàng, lưu sản phẩm yêu thích và nhận những ưu đãi được chọn riêng cho bạn.</p>
+            <p>Đăng nhập để theo dõi đơn hàng và gửi yêu cầu hỗ trợ thuận tiện hơn.</p>
             <div class="auth-aside-points">
                 <span><i class="bi bi-patch-check"></i> Sản phẩm chính hãng</span>
                 <span><i class="bi bi-truck"></i> Giao hàng tận tâm</span>
@@ -102,6 +111,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <?php endif; ?>
 
             <form method="post" class="auth-form" autocomplete="on">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="redirect" value="<?= e($redirect) ?>">
                 <label>
                     Tên người dùng hoặc Email
@@ -125,8 +135,7 @@ require_once __DIR__ . '/../layouts/header.php';
                     >
                 </label>
                 <div class="auth-options">
-                    <label><input type="checkbox" name="remember" checked> Ghi nhớ đăng nhập</label>
-                    <a href="mailto:info@ibpvn.com?subject=Qu%C3%AAn%20m%E1%BA%ADt%20kh%E1%BA%A9u">Quên mật khẩu?</a>
+                    <a href="mailto:info@ibpvn.com?subject=Password%20recovery">Liên hệ để khôi phục mật khẩu</a>
                 </div>
                 <button class="button-primary auth-submit" type="submit">
                     Đăng nhập <i class="bi bi-arrow-right"></i>
@@ -145,4 +154,3 @@ require_once __DIR__ . '/../layouts/header.php';
     </div>
 </main>
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
-

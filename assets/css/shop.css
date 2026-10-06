@@ -95,6 +95,28 @@
     font-size: 14px;
 }
 
+.catalog-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 28px 0;
+    color: var(--ibp-muted);
+}
+
+.catalog-pagination a {
+    padding: 9px 14px;
+    border: 1px solid var(--ibp-line);
+    border-radius: 6px;
+    color: var(--ibp-blue);
+    text-decoration: none;
+}
+
+.catalog-pagination a:hover {
+    border-color: var(--ibp-blue);
+    background: #eaf6fc;
+}
+
 .catalog-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));

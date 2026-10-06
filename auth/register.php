@@ -1,32 +1,38 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-$redirect = $_GET['redirect'] ?? ($_POST['redirect'] ?? '');
+$redirectValue = $_GET['redirect'] ?? ($_POST['redirect'] ?? '');
+$redirect = is_string($redirectValue) ? $redirectValue : '';
 if (!empty($_SESSION['user'])) {
-    $dest = (!empty($redirect) && str_starts_with($redirect, BASE_PATH)) ? $redirect : (BASE_PATH . '/home/home.php');
+    $dest = is_safe_local_redirect($redirect) ? $redirect : (BASE_PATH . '/home/home.php');
     header('Location: ' . $dest);
     exit;
 }
 
 $error = '';
-$username = trim($_POST['username'] ?? '');
-$email = strtolower(trim($_POST['email'] ?? ''));
-$phone = trim($_POST['phone'] ?? '');
+$usernameValue = $_POST['username'] ?? '';
+$emailValue = $_POST['email'] ?? '';
+$phoneValue = $_POST['phone'] ?? '';
+$username = is_string($usernameValue) ? trim($usernameValue) : '';
+$email = is_string($emailValue) ? strtolower(trim($emailValue)) : '';
+$phone = is_string($phoneValue) ? trim($phoneValue) : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $password = $_POST['password'] ?? '';
-    $confirmPassword = $_POST['confirm_password'] ?? '';
-    $passwordLength = function_exists('mb_strlen')
-        ? mb_strlen($password, 'UTF-8')
-        : strlen($password);
-    $usernameLength = function_exists('mb_strlen')
-        ? mb_strlen($username, 'UTF-8')
-        : strlen($username);
+    $passwordValue = $_POST['password'] ?? '';
+    $confirmPasswordValue = $_POST['confirm_password'] ?? '';
+    $password = is_string($passwordValue) ? $passwordValue : '';
+    $confirmPassword = is_string($confirmPasswordValue) ? $confirmPasswordValue : '';
+    $passwordLength = text_length($password);
+    $usernameLength = text_length($username);
 
-    if ($username === '' || $usernameLength > 150) {
+    if (!csrf_valid()) {
+        $error = 'Phiên đăng ký đã hết hạn. Vui lòng tải lại trang và thử lại.';
+    } elseif ($username === '' || $usernameLength > 150) {
         $error = 'Tên người dùng không được để trống và tối đa 150 ký tự.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || text_length($email) > 190) {
         $error = 'Vui lòng nhập địa chỉ email hợp lệ.';
+    } elseif ($phone !== '' && !valid_phone($phone)) {
+        $error = 'Vui lòng nhập số điện thoại gồm 7–25 ký tự hợp lệ.';
     } elseif ($passwordLength < 8) {
         $error = 'Mật khẩu cần có ít nhất 8 ký tự.';
     } elseif ($password !== $confirmPassword) {
@@ -56,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 session_regenerate_id(true);
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
                 $_SESSION['user'] = [
                     'id' => (int)$database->lastInsertId(),
                     'name' => $username,
@@ -63,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'email' => $email,
                 ];
 
-                $dest = (!empty($redirect) && str_starts_with($redirect, BASE_PATH))
+                $dest = is_safe_local_redirect($redirect)
                     ? $redirect
                     : (BASE_PATH . '/home/home.php');
 
@@ -71,6 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         } catch (PDOException $exception) {
+            if ($exception->getCode() !== '23000') {
+                error_log('Registration failed: ' . $exception->getMessage());
+            }
             $error = $exception->getCode() === '23000'
                 ? 'Tên người dùng hoặc email này đã được đăng ký.'
                 : 'Không thể tạo tài khoản lúc này. Vui lòng thử lại.';
@@ -87,7 +97,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <img src="<?= BASE_PATH ?>/assets/images/logo_IBP.png" alt="IBP Technology">
             <span class="auth-eyebrow">IBP MEMBER</span>
             <h1>Chăm sóc nguồn nước, chăm sóc tổ ấm.</h1>
-            <p>Tạo tài khoản để nhận tư vấn chuyên sâu, theo dõi đơn hàng và mở khóa ưu đãi dành riêng cho bạn.</p>
+            <p>Tạo tài khoản để theo dõi đơn hàng và gửi yêu cầu tư vấn thuận tiện hơn.</p>
             <div class="auth-aside-points">
                 <span><i class="bi bi-patch-check"></i> Sản phẩm chính hãng</span>
                 <span><i class="bi bi-truck"></i> Giao hàng tận tâm</span>
@@ -112,6 +122,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <?php endif; ?>
 
             <form method="post" class="auth-form" autocomplete="off">
+                <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
                 <input type="hidden" name="redirect" value="<?= e($redirect) ?>">
                 <label>
                     Tên người dùng
