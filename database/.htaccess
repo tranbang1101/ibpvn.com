@@ -1,0 +1,3 @@
+<FilesMatch "\.(sql|txt)$">
+    Require all denied
+</FilesMatch>

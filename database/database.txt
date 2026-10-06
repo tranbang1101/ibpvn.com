@@ -1,0 +1,10 @@
+database
+
+table nguoidung: tạo khi người dung đăng ký/đăng nhập ở trang register/login
+table product: các thông tin cơ bản của sản phẩm (tên, giá, miêu tả, lượt xem, rating, lượt tim/yêu tích,...)
+table productdetail: tất cả các thông tin chủ chốt (tên, ảnh sản phẩm, giá: giá đã giảm/giá hiện tại, thông tin sản phẩm, thông số kĩ thuật, đánh giá, lượt tim/yêu thích, đã bán, giảm giá, bảo hành, thương hiệu, giao hàn: miễn phí/có phí(nêu rõ số tiền), phiên bản: chứa ảnh các phiên bản khác nhau, thông tin ưu đãi khi mua hàng)
+table included(kèm): ảnh, tên sản phẩm, giá
+table tổng tiền: tính tổng tiền sản phẩm đã mua(số lượng đã chọn, sản phẩm kèm giá(nếu người dùng chọn)
+
+...
+

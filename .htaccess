@@ -1,0 +1,10 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /ibpvn.com/
+
+# Keep source design files out of the public web root.
+RewriteRule \.fig$ - [F,NC,L]
+
+# A direct request to the project root opens the storefront.
+RewriteRule ^$ home/home.php [L]
