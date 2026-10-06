@@ -2,7 +2,7 @@
 $pageTitle = 'IBP Technology - Trang chủ';
 require_once '../layouts/header.php';
 ?>
-    <!-- ==================== DANH MỤC SẢN PHẨM ==================== -->
+    <!-- ==================== DANH MỤC SẢN PHẨM ===================== -->
     <section class="home-banner-section">
         <div class="home-banner-container">
             <aside class="product-category">
