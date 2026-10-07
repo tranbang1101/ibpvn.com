@@ -161,31 +161,31 @@ require_once __DIR__ . '/../layouts/header.php';
                 <div class="feature-icon">
                     <i class="bi bi-truck"></i>
                 </div>
-                <span class="feature-text">Hỗ trợ giao hàng theo khu vực</span>
+                <span class="feature-text">Giao hàng toàn quốc</span>
             </div>
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="bi bi-award"></i>
                 </div>
-                <span class="feature-text">Bảo hành theo chính sách sản phẩm</span>
+                <span class="feature-text">Bảo hành lâu dài</span>
             </div>
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="bi bi-tags"></i>
                 </div>
-                <span class="feature-text">Ưu đãi theo chương trình</span>
+                <span class="feature-text">Ưu đãi thường xuyên</span>
             </div>
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="bi bi-arrow-repeat"></i>
                 </div>
-                <span class="feature-text">Hỗ trợ đổi trả theo chính sách</span>
+                <span class="feature-text">Đổi trả miễn phí</span>
             </div>
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="bi bi-headset"></i>
                 </div>
-                <span class="feature-text">Tư vấn từ 8:00 đến 18:00</span>
+                <span class="feature-text">Dịch vụ tư vấn 24/7</span>
             </div>
         </div>
     </div>
