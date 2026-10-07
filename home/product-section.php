@@ -1,15 +1,23 @@
 <?php
+$sectionCategoryOrder = $productSectionTitle === 'Sản Phẩm Nổi Bật'
+    ? $featuredProductCategories
+    : $promoProductCategories;
+$sectionProducts = array_values(array_filter(
+    $productSectionProducts,
+    static fn(array $product): bool => isset($sectionCategoryOrder[trim((string)($product['danh_muc'] ?? ''))])
+));
 $sectionCategories = [];
-foreach ($productSectionProducts as $product) {
-    $categoryName = trim((string)($product['danh_muc'] ?? ''));
-    $categoryKey = $homeCategories[$categoryName] ?? ('category-' . (int)$product['id']);
-    if ($categoryKey === 'phu-kien') {
-        continue;
+foreach ($sectionCategoryOrder as $categoryName => $categoryKey) {
+    foreach ($sectionProducts as $product) {
+        if (trim((string)($product['danh_muc'] ?? '')) === $categoryName) {
+            $sectionCategories[$categoryKey] = $categoryName;
+            break;
+        }
     }
-    $sectionCategories[$categoryKey] = $categoryName !== '' ? $categoryName : 'Sản phẩm';
 }
+$defaultCategory = (string)(array_key_first($sectionCategories) ?? '');
 ?>
-<section class="product-promo" data-product-section data-default-category="<?= e((string)(array_key_first($sectionCategories) ?? '')) ?>">
+<section class="product-promo" data-product-section data-default-category="<?= e($defaultCategory) ?>">
     <div class="product-promo-inner">
         <div class="product-promo-header">
             <div class="product-promo-title-wrap">
@@ -24,18 +32,18 @@ foreach ($productSectionProducts as $product) {
                         <?php endif; ?>
                         <button
                             type="button"
-                            class="promo-tab <?= $categoryKey === array_key_first($sectionCategories) ? 'is-active' : '' ?>"
+                            class="promo-tab <?= $categoryKey === $defaultCategory ? 'is-active' : '' ?>"
                             data-category="<?= e($categoryKey) ?>"
-                            aria-pressed="<?= $categoryKey === array_key_first($sectionCategories) ? 'true' : 'false' ?>"
+                            aria-pressed="<?= $categoryKey === $defaultCategory ? 'true' : 'false' ?>"
                         ><?= e($categoryName) ?></button>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
         </div>
         <div class="product-slider-wrap">
-            <div class="swiper product-swiper" <?= !$productSectionProducts ? 'hidden' : '' ?>>
+            <div class="swiper product-swiper" <?= !$sectionProducts ? 'hidden' : '' ?>>
                 <div class="swiper-wrapper">
-                    <?php foreach ($productSectionProducts as $product): ?>
+                    <?php foreach ($sectionProducts as $product): ?>
                         <?php
                         $productId = (int)$product['id'];
                         $categoryName = trim((string)($product['danh_muc'] ?? ''));
@@ -56,7 +64,7 @@ foreach ($productSectionProducts as $product) {
                                     >
                                     <?php if ($discount > 0): ?>
                                         <span class="badge-hot">Ưu đãi</span>
-                                        <span class="badge-discount">-<?= $discount ?>%</span>
+                                        <span class="badge-discount" aria-label="Ưu đãi"></span>
                                     <?php endif; ?>
                                 </a>
                                 <div class="product-card-body">
@@ -94,7 +102,7 @@ foreach ($productSectionProducts as $product) {
                     <?php endforeach; ?>
                 </div>
             </div>
-            <div class="product-empty-state" <?= $productSectionProducts ? 'hidden' : '' ?> role="status">
+            <div class="product-empty-state" <?= $sectionProducts ? 'hidden' : '' ?> role="status">
                 <?= $homeProductError !== ''
                     ? e($homeProductError)
                     : ($productSectionTitle === 'Sản Phẩm Ưu Đãi'

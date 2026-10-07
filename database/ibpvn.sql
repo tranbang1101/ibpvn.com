@@ -155,7 +155,103 @@ ON DUPLICATE KEY UPDATE
     mo_ta_ngan = VALUES(mo_ta_ngan),
     anh_chinh = VALUES(anh_chinh);
 
-SET @sample_product_id = LAST_INSERT_ID();
+INSERT INTO product (
+    slug, ten, danh_muc, thuong_hieu, gia, gia_khuyen_mai, mo_ta_ngan,
+    anh_chinh, rating, so_danh_gia, so_luong_ton, da_ban
+)
+VALUES
+    (
+        'may-lanh-inverter-1hp-tiet-kiem-dien',
+        'Máy lạnh Inverter 1 HP tiết kiệm điện',
+        'Máy lạnh',
+        NULL,
+        6990000,
+        NULL,
+        'Máy lạnh Inverter công suất 1 HP, phù hợp cho phòng nhỏ.',
+        '/ibpvn.com/assets/images/maylanh.png',
+        0,
+        0,
+        12,
+        0
+    ),
+    (
+        'may-lanh-inverter-1-5hp-lam-lanh-nhanh',
+        'Máy lạnh Inverter 1.5 HP làm lạnh nhanh',
+        'Máy lạnh',
+        NULL,
+        9490000,
+        NULL,
+        'Máy lạnh Inverter công suất 1.5 HP, làm lạnh nhanh cho phòng vừa.',
+        '/ibpvn.com/assets/images/maylanh.png',
+        0,
+        0,
+        12,
+        0
+    ),
+    (
+        'may-lanh-inverter-2hp-van-hanh-em',
+        'Máy lạnh Inverter 2 HP vận hành êm',
+        'Máy lạnh',
+        NULL,
+        11990000,
+        NULL,
+        'Máy lạnh Inverter công suất 2 HP, vận hành êm ái.',
+        '/ibpvn.com/assets/images/maylanh.png',
+        0,
+        0,
+        12,
+        0
+    ),
+    (
+        'may-lanh-tiet-kiem-dien-1hp',
+        'Máy lạnh tiết kiệm điện 1 HP',
+        'Máy lạnh',
+        NULL,
+        7490000,
+        NULL,
+        'Máy lạnh công suất 1 HP, thiết kế gọn cho không gian gia đình.',
+        '/ibpvn.com/assets/images/maylanh.png',
+        0,
+        0,
+        12,
+        0
+    ),
+    (
+        'may-lanh-lam-lanh-nhanh-1-5hp',
+        'Máy lạnh làm lạnh nhanh 1.5 HP',
+        'Máy lạnh',
+        NULL,
+        8990000,
+        NULL,
+        'Máy lạnh công suất 1.5 HP, phù hợp phòng có diện tích vừa.',
+        '/ibpvn.com/assets/images/maylanh.png',
+        0,
+        0,
+        12,
+        0
+    ),
+    (
+        'may-lanh-cong-suat-lon-2hp',
+        'Máy lạnh công suất lớn 2 HP',
+        'Máy lạnh',
+        NULL,
+        12990000,
+        NULL,
+        'Máy lạnh công suất 2 HP, phù hợp phòng rộng.',
+        '/ibpvn.com/assets/images/maylanh.png',
+        0,
+        0,
+        12,
+        0
+    )
+ON DUPLICATE KEY UPDATE
+    ten = VALUES(ten),
+    danh_muc = VALUES(danh_muc),
+    thuong_hieu = VALUES(thuong_hieu),
+    gia = VALUES(gia),
+    gia_khuyen_mai = VALUES(gia_khuyen_mai),
+    mo_ta_ngan = VALUES(mo_ta_ngan),
+    anh_chinh = VALUES(anh_chinh);
 
 INSERT INTO product (slug, ten, danh_muc, thuong_hieu, gia, gia_khuyen_mai, mo_ta_ngan, anh_chinh, rating, so_danh_gia, so_luong_ton, da_ban)
 VALUES ('may-loc-nuoc-ao-smith-a2', 'Máy Lọc Nước A. O. Smith A2', 'Máy lọc nước', 'AO Smith', 12600000, 9200000, 'Máy lọc nước A. O. Smith A2 với công nghệ lọc tiên tiến, mang đến nguồn nước tinh khiết cho gia đình.', '/ibpvn.com/assets/images/maylocnuoc-a.o.smith.png', 0, 0, 12, 0)
@@ -241,3 +337,45 @@ WHERE product_id = @sample_product_id
   );
 
 DELETE FROM danh_gia WHERE product_id = @sample_product_id AND user_id IS NULL AND ten_hien_thi IN ('Sơn Tùng', 'Nguyễn Quốc', 'Tiến Thịnh', 'Minh Anh', 'Thanh Hà', 'Quốc Bảo', 'Thu Trang', 'Hoàng Nam', 'Bảo Ngọc', 'Hữu Phước', 'Kim Oanh', 'Gia Huy', 'Tú Anh', 'Đình Khang', 'Ngọc Châu', 'Đức Anh', 'Phương Uyên', 'Hải Yến', 'Văn Long', 'Quỳnh Mai');
+
+INSERT INTO product (
+    slug, ten, danh_muc, thuong_hieu, gia, gia_khuyen_mai, mo_ta_ngan,
+    anh_chinh, rating, so_danh_gia, so_luong_ton, da_ban
+)
+VALUES
+    (
+        'may-loc-nuoc-dau-nguon-3-cap-loc-thong-minh',
+        'Máy lọc nước đầu nguồn 3 cấp lọc thông minh',
+        'Máy lọc nước đầu nguồn',
+        NULL,
+        2500000,
+        NULL,
+        'Máy lọc nước đầu nguồn 3 cấp lọc thông minh.',
+        '/ibpvn.com/assets/images/may-loc-nuoc-dau-nguon1.png',
+        0,
+        0,
+        0,
+        0
+    ),
+    (
+        'may-loc-nuoc-dau-nguon-karofi-ktf-333i',
+        'Máy lọc nước đầu nguồn Karofi KTF-333I',
+        'Máy lọc nước đầu nguồn',
+        'Karofi',
+        58950000,
+        NULL,
+        'Máy lọc nước đầu nguồn Karofi KTF-333I.',
+        '/ibpvn.com/assets/images/may-loc-nuoc-dau-nguon-ktf-333I-1.png',
+        0,
+        0,
+        0,
+        0
+    )
+ON DUPLICATE KEY UPDATE
+    ten = VALUES(ten),
+    danh_muc = VALUES(danh_muc),
+    thuong_hieu = VALUES(thuong_hieu),
+    gia = VALUES(gia),
+    gia_khuyen_mai = VALUES(gia_khuyen_mai),
+    mo_ta_ngan = VALUES(mo_ta_ngan),
+    anh_chinh = VALUES(anh_chinh);

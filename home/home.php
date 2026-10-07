@@ -10,38 +10,68 @@ $homeCategories = [
     'Máy lạnh' => 'may-lanh',
     'Phụ kiện' => 'phu-kien',
 ];
+$promoProductCategories = [
+    'Máy lọc nước' => 'may-loc-nuoc',
+    'Máy nước nóng' => 'may-nuoc-nong',
+    'Máy lọc nước đầu nguồn' => 'may-loc-nuoc-dau-nguon',
+    'Máy lọc không khí' => 'may-loc-khong-khi',
+    'Lõi lọc' => 'loi-loc',
+];
+$featuredProductCategories = $promoProductCategories + [
+    'Máy lạnh' => 'may-lanh',
+];
+$carouselProductCategories = $featuredProductCategories;
 $homeProducts = [];
 $homeDiscountedProducts = [];
 $homeProductError = '';
 $availableHomeCategories = [];
+$fillCarouselProducts = static function (array $products): array {
+    $products = array_values($products);
+    $productCount = count($products);
+    for ($index = $productCount; $productCount > 0 && $index < 6; $index++) {
+        $products[] = $products[$index % $productCount];
+    }
+    return $products;
+};
 try {
     $database = db();
     if (!$database) {
         $homeProductError = 'Chưa kết nối được cơ sở dữ liệu để tải sản phẩm.';
     } else {
-        $statement = $database->query(
-        'SELECT id, ten, danh_muc, gia, gia_khuyen_mai, mo_ta_ngan, anh_chinh, rating, so_danh_gia, da_ban '
-            . 'FROM product WHERE hien_thi = 1 ORDER BY da_ban DESC, id DESC LIMIT 12'
-        );
-        $homeProducts = $statement->fetchAll();
-        $statement = $database->query(
+        $statement = $database->prepare(
             'SELECT id, ten, danh_muc, gia, gia_khuyen_mai, mo_ta_ngan, anh_chinh, rating, so_danh_gia, da_ban '
-            . 'FROM product WHERE hien_thi = 1 AND gia_khuyen_mai > 0 AND gia_khuyen_mai < gia '
-            . 'ORDER BY da_ban DESC, id DESC LIMIT 12'
+            . 'FROM product WHERE hien_thi = 1 AND danh_muc = ? ORDER BY da_ban DESC, id DESC LIMIT 6'
         );
-        $homeDiscountedProducts = $statement->fetchAll();
-        $statement = $database->query(
-            "SELECT DISTINCT danh_muc FROM product WHERE hien_thi = 1 AND danh_muc <> '' ORDER BY danh_muc"
+        $discountedStatement = $database->prepare(
+            'SELECT id, ten, danh_muc, gia, gia_khuyen_mai, mo_ta_ngan, anh_chinh, rating, so_danh_gia, da_ban '
+            . 'FROM product WHERE hien_thi = 1 AND danh_muc = ? '
+            . 'AND gia_khuyen_mai > 0 AND gia_khuyen_mai < gia '
+            . 'ORDER BY da_ban DESC, id DESC LIMIT 6'
         );
-        foreach ($statement->fetchAll() as $categoryRow) {
-            $categoryName = trim((string)$categoryRow['danh_muc']);
-            if (isset($homeCategories[$categoryName])) {
-                $availableHomeCategories[$categoryName] = $homeCategories[$categoryName];
+        foreach ($carouselProductCategories as $categoryName => $categoryKey) {
+            $statement->execute([$categoryName]);
+            $categoryProducts = $fillCarouselProducts($statement->fetchAll());
+            if (!$categoryProducts) {
+                continue;
             }
+
+            $availableHomeCategories[$categoryName] = $categoryKey;
+            if (isset($featuredProductCategories[$categoryName])) {
+                $homeProducts = array_merge($homeProducts, $categoryProducts);
+            }
+            $discountedStatement->execute([$categoryName]);
+            $discountedProducts = $fillCarouselProducts($discountedStatement->fetchAll());
+            $homeDiscountedProducts = array_merge(
+                $homeDiscountedProducts,
+                $discountedProducts ?: $categoryProducts
+            );
         }
     }
 } catch (PDOException $exception) {
     error_log('Home product lookup failed: ' . $exception->getMessage());
+    $homeProducts = [];
+    $homeDiscountedProducts = [];
+    $availableHomeCategories = [];
     $homeProductError = 'Chưa tải được danh sách sản phẩm. Vui lòng thử lại sau.';
 }
 $homeReviews = [];
@@ -224,20 +254,30 @@ require_once __DIR__ . '/../layouts/header.php';
                     </div>
                     <div class="reviews-grid">
                         <?php if ($homeReviews): ?>
-                            <?php foreach ($homeReviews as $review): ?>
-                                <?php $stars = max(0, min(5, (int)$review['so_sao'])); ?>
+                            <?php foreach ($homeReviews as $reviewIndex => $review): ?>
+                                <?php
+                                $rating = max(0, min(5, (float)$review['so_sao']));
+                                $stars = (int)floor($rating);
+                                $avatar = $reviewIndex < 2 ? 'customer1.png' : 'customer-africa.png';
+                                ?>
                                 <article class="review-card">
                                     <div class="review-header">
-                                        <span class="review-avatar"><i class="bi bi-person-circle"></i></span>
+                                        <img
+                                            class="review-avatar"
+                                            src="<?= BASE_PATH ?>/assets/images/<?= e($avatar) ?>"
+                                            alt=""
+                                            loading="lazy"
+                                        >
                                         <div class="review-info">
                                             <h3 class="review-name"><?= e($review['ten_hien_thi']) ?></h3>
+                                            <span class="review-badge">Featured</span>
                                             <div class="review-rating">
-                                                <div class="stars" aria-label="<?= $stars ?> trên 5 sao">
+                                                <div class="stars" aria-label="<?= e(number_format($rating, 1)) ?> trên 5 sao">
                                                     <?php for ($star = 1; $star <= 5; $star++): ?>
                                                         <i class="bi <?= $star <= $stars ? 'bi-star-fill' : 'bi-star' ?>"></i>
                                                     <?php endfor; ?>
                                                 </div>
-                                                <span class="rating-score"><?= $stars ?> / 5</span>
+                                                <span class="rating-score"><?= e(number_format($rating, 1)) ?></span>
                                             </div>
                                         </div>
                                     </div>
