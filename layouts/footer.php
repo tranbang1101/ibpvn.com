@@ -15,8 +15,8 @@
                         <ul class="footer-contact-list">
                             <li><strong>Hotline:</strong> +84 983 537 155</li>
                             <li><strong>Email:</strong> info@ibpvn.com</li>
-                            <li><strong>Địa chỉ:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
-                            <li><strong>Văn phòng:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
+                            <li><strong>Address:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
+                            <li><strong>Office:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
                         </ul>
                     </div>
                 </div>
@@ -34,10 +34,10 @@
                     <div class="footer-block">
                         <h4 class="footer-heading blue">Chính sách</h4>
                         <ul class="footer-menu">
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=warranty">Hỏi về chính sách bảo hành</a></li>
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=insurance">Hỏi về chính sách bảo hiểm</a></li>
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=refund">Hỏi về chính sách hoàn tiền</a></li>
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=promotion">Hỏi về chính sách khuyến mãi</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=warranty">Chính sách bảo hành</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=insurance">Chính sách bảo hiểm</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=refund">Chính sách hoàn tiền</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=promotion">Chính sách khuyến mãi</a></li>
                         </ul>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
         </div>
         <div class="footer-bottom">
             <div class="footer-bottom-inner">
-                © <?= date('Y') ?> IBP Technology Co., Ltd.
+                Copyright is registered © <?= date('Y') ?> IBP Technology Co., Ltd | IBP Technology
             </div>
         </div>
     </footer>
