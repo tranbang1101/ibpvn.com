@@ -91,21 +91,18 @@ document.querySelectorAll('.product-swiper').forEach((el) => {
     });
 });
 /* VIEW ALL NEWS */
-const newsGrid = document.getElementById('newsGrid');
+const newsUpdateMessage = document.getElementById('newsUpdateMessage');
 const btnToggleNews = document.getElementById('btnToggleNews');
-if (newsGrid && btnToggleNews) {
+if (newsUpdateMessage && btnToggleNews) {
     btnToggleNews.addEventListener('click', function (event) {
         event.preventDefault();
-        const isExpanded = newsGrid.classList.toggle('is-expanded');
-        if (isExpanded) {
-            // Đang hiện tất cả → đổi thành ẨN BỚT
-            this.innerHTML = 'ẨN BỚT <i class="bi bi-chevron-up"></i>';
-            this.classList.add('is-expanded');
-        } else {
-            // Đang ẩn → đổi thành XEM TẤT CẢ
-            this.innerHTML = 'XEM TẤT CẢ <i class="bi bi-chevron-right"></i>';
-            this.classList.remove('is-expanded');
-        }
+        const isExpanded = newsUpdateMessage.hidden;
+        newsUpdateMessage.hidden = !isExpanded;
+        this.setAttribute('aria-expanded', String(isExpanded));
+        this.classList.toggle('is-expanded', isExpanded);
+        this.innerHTML = isExpanded
+            ? 'ẨN BỚT <i class="bi bi-chevron-up" aria-hidden="true"></i>'
+            : 'XEM TẤT CẢ <i class="bi bi-chevron-right" aria-hidden="true"></i>';
     });
 }
 /* FAQ COLLAPSE */

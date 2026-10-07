@@ -51,7 +51,7 @@ if (db()) {
             'SELECT r.ten_hien_thi, r.so_sao, r.noi_dung, p.ten AS ten_san_pham '
             . 'FROM danh_gia r INNER JOIN product p ON p.id = r.product_id '
             . 'WHERE r.trang_thai = 1 AND p.hien_thi = 1 '
-            . 'ORDER BY r.created_at DESC, r.id DESC LIMIT 3'
+            . 'ORDER BY r.created_at DESC, r.id DESC LIMIT 4'
         );
         $homeReviews = $statement->fetchAll();
     } catch (PDOException $exception) {
@@ -327,8 +327,8 @@ require_once __DIR__ . '/../layouts/header.php';
                 <div class="contact-cta">
                     <h2 class="contact-heading">Liên hệ với chúng tôi<br>để có trải nghiệm mua hàng<br>tốt nhất</h2>
                     <div class="contact-buttons">
-                        <a href="<?= BASE_PATH ?>/product/catalog.php" class="btn-shop-now">Xem sản phẩm <i class="bi bi-arrow-right"></i></a>
-                        <a href="<?= BASE_PATH ?>/contact.php" class="btn-contact-us">Liên hệ <i class="bi bi-arrow-right"></i></a>
+                        <a href="<?= BASE_PATH ?>/product/catalog.php" class="btn-shop-now">Shop Now <i class="bi bi-arrow-right"></i></a>
+                        <a href="<?= BASE_PATH ?>/contact.php" class="btn-contact-us">Contact Us <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
                 <!-- FORM ĐĂNG KÝ BÁO GIÁ -->
@@ -357,16 +357,47 @@ require_once __DIR__ . '/../layouts/header.php';
         </div>
     </section>
     <!-- ==================== TIN TỨC & SỰ KIỆN ==================== -->
+    <?php
+    $homeNewsItems = [
+        ['image' => 'new1.png', 'title' => 'Housing Markets That Changed the Most This Week'],
+        ['image' => 'new2.png', 'title' => 'Read Unveils the Best Canadian Cities for Biking'],
+        ['image' => 'new3.png', 'title' => '10 Walkable Cities Where You Can Live Affordably'],
+        ['image' => 'new4.png', 'title' => 'New Apartment Nice in the Best Canadian Cities'],
+    ];
+    ?>
     <section class="news-section">
         <div class="news-inner">
             <div class="news-title-wrap">
                 <h2 class="news-title">Tin tức & Sự kiện</h2>
                 <span class="underline"></span>
             </div>
-            <div class="detail-card news-detail-message">
+            <div class="news-grid" id="newsGrid">
+                <?php foreach ($homeNewsItems as $newsItem): ?>
+                    <article class="news-card">
+                        <a href="<?= BASE_PATH ?>/news/detail.php" class="news-card-image">
+                            <img src="<?= BASE_PATH ?>/assets/images/<?= e($newsItem['image']) ?>" alt="<?= e($newsItem['title']) ?>" loading="lazy">
+                        </a>
+                        <div class="news-card-body">
+                            <span class="news-date">Aug 19, 2025</span>
+                            <h3 class="news-card-title">
+                                <a href="<?= BASE_PATH ?>/news/detail.php"><?= e($newsItem['title']) ?></a>
+                            </h3>
+                            <a href="<?= BASE_PATH ?>/news/detail.php" class="news-read-more">
+                                Read More <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+            <div class="detail-card news-detail-message" id="newsUpdateMessage" hidden aria-live="polite">
                 <h3>Đang cập nhật nội dung</h3>
                 <p>Các bài viết và sự kiện sẽ được đăng tại đây khi có nội dung chính thức.</p>
                 <a href="<?= BASE_PATH ?>/news/detail.php">Xem thông tin tin tức</a>
+            </div>
+            <div class="news-footer">
+                <button type="button" id="btnToggleNews" class="btn-view-all-news" aria-expanded="false" aria-controls="newsUpdateMessage">
+                    XEM TẤT CẢ <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </section>

@@ -8,7 +8,7 @@
         let visibleCount = 0;
 
         slides.forEach(function (slide) {
-            const visible = showAll || slide.dataset.category === selectedCategory;
+            const visible = showAll || !selectedCategory || slide.dataset.category === selectedCategory;
             slide.classList.toggle('is-category-hidden', !visible);
             if (visible) visibleCount += 1;
         });

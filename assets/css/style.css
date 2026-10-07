@@ -588,19 +588,19 @@
 .feature-bar-inner {
     width: 1180px;
     max-width: calc(100% - 40px);
-    height: 64px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
     gap: 16px;
 }
 .feature-item {
-    flex: 1;
-    height: 64px;
+    min-width: 0;
+    min-height: 72px;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
     padding: 16px;
     gap: 16px;
     background: linear-gradient(180deg, #EAEAEA 0%, #F4F4F4 31.25%, #C8C8C8 67.31%, #E5E5E5 98.56%);
@@ -632,7 +632,8 @@
     font-size: 16px;
     line-height: 150%;
     color: #252525;
-    white-space: nowrap;
+    min-width: 0;
+    white-space: normal;
 }
 /* ==================== DANH MỤC NỔI BẬT ==================== */
 .featured-category {
@@ -650,7 +651,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 40px;
+    gap: 24px;
 }
 .featured-category-left {
     display: flex;
@@ -691,19 +692,23 @@
     font-size: 16px;
 }
 .featured-category-list {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
     align-items: center;
-    gap: 32px;
+    gap: 16px;
     flex: 1;
-    justify-content: flex-end;
+    min-width: 0;
+    justify-content: stretch;
 }
 .featured-category-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
     gap: 12px;
-    width: 88px;
+    width: 100%;
+    min-width: 0;
+    min-height: 114px;
     text-decoration: none;
     color: #252525;
     transition: all 0.25s ease;
@@ -733,6 +738,10 @@
     object-fit: contain;
 }
 .featured-category-name {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 2.2em;
     font-weight: 400;
     font-size: 14px;
     line-height: 100%;
@@ -1273,9 +1282,13 @@
 .reviews-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border: 1px;
+    align-items: stretch;
 }
 .review-card {
+    display: flex;
+    min-width: 0;
+    min-height: 190px;
+    flex-direction: column;
     padding: 20px;
     border-right: 1px solid #e5e7eb;
     border-bottom: 1px solid #e5e7eb;
@@ -1335,6 +1348,7 @@
     color: #6b7280;
 }
 .review-text {
+    margin-top: auto;
     font-size: 12px;
     line-height: 18px;
     color: #030712;
@@ -1651,6 +1665,9 @@
 .news-grid.is-expanded .news-card-extra {
     display: block;
 }
+#newsUpdateMessage[hidden] {
+    display: none !important;
+}
 /* Footer button */
 .news-footer {
     display: flex;
@@ -1669,6 +1686,9 @@
     color: #252525;
     text-decoration: none;
     transition: all 0.25s;
+    background: #FFFFFF;
+    font-family: inherit;
+    cursor: pointer;
 }
 .btn-view-all-news:hover {
     background: #0082C8;

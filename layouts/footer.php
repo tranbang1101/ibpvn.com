@@ -34,10 +34,10 @@
                     <div class="footer-block">
                         <h4 class="footer-heading blue">Chính sách</h4>
                         <ul class="footer-menu">
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=warranty">Chính sách bảo hành</a></li>
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=insurance">Chính sách bảo hiểm</a></li>
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=refund">Chính sách hoàn tiền</a></li>
-                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=promotion">Chính sách khuyến mãi</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=warranty">Hỏi về chính sách bảo hành</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=insurance">Hỏi về chính sách bảo hiểm</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=refund">Hỏi về chính sách hoàn tiền</a></li>
+                            <li><a href="<?= BASE_PATH ?>/contact.php?topic=promotion">Hỏi về chính sách khuyến mãi</a></li>
                         </ul>
                     </div>
                 </div>
@@ -68,15 +68,15 @@
         </div>
         <div class="footer-bottom">
             <div class="footer-bottom-inner">
-                Copyright is registered © <?= date('Y') ?> IBP Technology Co., Ltd.
+                © <?= date('Y') ?> IBP Technology Co., Ltd.
             </div>
         </div>
     </footer>
     <script src="<?= BASE_PATH ?>/assets/js/fancybox.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js"></script>
-    <script src="<?= BASE_PATH ?>/assets/js/main.js?v=9"></script>
+    <script src="<?= BASE_PATH ?>/assets/js/main.js?v=10"></script>
     <script src="<?= BASE_PATH ?>/assets/js/cart.js?v=2"></script>
-    <script src="<?= BASE_PATH ?>/assets/js/home-products.js?v=3"></script>
+    <script src="<?= BASE_PATH ?>/assets/js/home-products.js?v=4"></script>
     <script src="<?= BASE_PATH ?>/assets/js/iconify-icon.min.js"></script>
 </body>
 </html>

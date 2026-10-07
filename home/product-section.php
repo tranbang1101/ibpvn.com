@@ -3,6 +3,9 @@ $sectionCategories = [];
 foreach ($productSectionProducts as $product) {
     $categoryName = trim((string)($product['danh_muc'] ?? ''));
     $categoryKey = $homeCategories[$categoryName] ?? ('category-' . (int)$product['id']);
+    if ($categoryKey === 'phu-kien') {
+        continue;
+    }
     $sectionCategories[$categoryKey] = $categoryName !== '' ? $categoryName : 'Sản phẩm';
 }
 ?>

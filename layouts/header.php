@@ -24,9 +24,9 @@ $headerUsername = is_array($headerUser)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/fancybox.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style.css?v=10">
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style.css?v=11">
     <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/shop.css?v=9">
-    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style-responsive.css?v=14">
+    <link rel="stylesheet" href="<?= BASE_PATH ?>/assets/css/style-responsive.css?v=15">
 </head>
 <body>
 <!-- ==================== HEADER ==================== -->
