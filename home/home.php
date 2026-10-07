@@ -190,6 +190,9 @@ require_once __DIR__ . '/../layouts/header.php';
         </div>
     </div>
     <!--==================== DANH MỤC NỔI BẬT =====================-->
+    <?php 
+    $availableHomeCategories['Phụ kiện'] = 'phu-kien';
+    ?>
     <section class="featured-category">
         <div class="featured-category-inner">
             <div class="featured-category-left">
