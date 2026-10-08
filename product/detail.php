@@ -76,13 +76,54 @@ if ($loadError !== '' || !$product) {
 }
 
 $image = asset_url($product['anh_chinh'] ?? null) ?: $asset('sanpham.png');
+$a2GalleryImages = [
+    $asset('maylocnuoc-a.o.smith.png'),
+    $asset('a.o.smith-mini1.png'),
+    $asset('a.o.smith-mini2.png'),
+    $asset('a.o.smith-mini3.png'),
+];
 if (!$images) {
     $images = [['image_url' => $image, 'alt_text' => $product['ten']]];
 }
+if (count($images) < 4) {
+    foreach (array_slice($a2GalleryImages, 1) as $fallbackImage) {
+        $images[] = [
+            'image_url' => $fallbackImage,
+            'alt_text' => 'Ảnh sản phẩm ' . (count($images) + 1),
+        ];
+        if (count($images) === 4) {
+            break;
+        }
+    }
+}
 $rawSpecs = json_decode((string)($product['thong_so_ky_thuat'] ?? ''), true) ?: [];
 $rawSpecs = is_array($rawSpecs) ? $rawSpecs : [];
-$productOrigin = $rawSpecs['Xuất xứ'] ?? '—';
+$isA2Product = ($product['slug'] ?? '') === 'may-loc-nuoc-ao-smith-a2';
+$productOrigin = $rawSpecs['Xuất xứ'] ?? ($isA2Product ? 'Mỹ' : '—');
 $specs = $rawSpecs;
+$a2DefaultSpecs = [
+    'Số cấp lọc' => '7 cấp lọc',
+    'Chức năng' => 'Nước thường',
+    'Điện áp đầu vào' => 'AC 220V/ 50HZ',
+    'Công suất (tổng)' => '85 W',
+    'Áp suất nước cấp phù hợp' => '0.1MPa ~ 0.35MPa',
+    'Nhiệt độ nước cấp' => '5~38°C',
+    'Công suất lọc/phút' => '1.1 L/phút',
+    'Phương pháp sục rửa' => 'Tự động làm sạch',
+];
+$modalSpecs = $specs;
+$visibleSpecs = array_slice($specs, 0, 4, true);
+if ($isA2Product) {
+    $modalSpecs = array_merge($a2DefaultSpecs, $specs);
+    $visibleSpecs = [
+        'Xuất xứ' => $productOrigin,
+        'Số cấp lọc' => $specs['Số cấp lọc'] ?? $a2DefaultSpecs['Số cấp lọc'],
+        'Chức năng' => $specs['Chức năng'] ?? $a2DefaultSpecs['Chức năng'],
+        'Bảo hành' => $product['bao_hanh'] ?: '24 tháng',
+    ];
+}
+$modalSpecs = array_slice($modalSpecs, 0, 8, true);
+$visibleSpecs = array_slice($visibleSpecs, 0, 4, true);
 $currentPrice = (float)($product['gia_khuyen_mai'] ?: $product['gia']);
 $originalPrice = (float)$product['gia'];
 $discountPercent = $originalPrice > $currentPrice ? (int)round(($originalPrice - $currentPrice) / $originalPrice * 100) : 0;
@@ -91,10 +132,60 @@ $reviewCount = (int)($product['so_danh_gia'] ?? 0);
 $baseImage = asset_url($images[0]['image_url'] ?? null) ?: $image;
 $pageTitle = $product['ten'] . ' | IBP Technology';
 $defaultVariantId = (int)($variants[0]['id'] ?? 0);
+$promotionLines = [];
+$storedPromotionLines = !empty($product['thong_tin_uu_dai'])
+    ? (preg_split('/\r\n|\r|\n/', trim((string)$product['thong_tin_uu_dai'])) ?: [])
+    : [];
+if ($isA2Product && count($storedPromotionLines) < 4) {
+    $promotionLines = [
+        'LẮP Thêm LÕI LỌC NƯỚC ION KIỀM ALKALINE HYDROGEN - NHẬP KHẨU HÀN QUỐC chỉ 500.000Đ (Giá thị trường 950.000đ)',
+        'Tặng thiết bị kiểm tra độ tinh khiết của nước TDS trị giá 150.000đ',
+        'Tặng gói lắp đặt và phụ kiện trị giá 500.000đ',
+        'Tặng 2.000.000đ đồng khi mua Lọc đầu nguồn và Heatpump A. O. Smith',
+    ];
+} else {
+    $promotionLines = $storedPromotionLines;
+}
+$storedRecentIds = $_SESSION['recently_viewed_products'] ?? [];
+$recentProductIds = is_array($storedRecentIds)
+    ? array_values(array_unique(array_filter(
+        array_map('intval', $storedRecentIds),
+        static fn(int $id): bool => $id > 0 && $id !== $productId
+    )))
+    : [];
+$_SESSION['recently_viewed_products'] = array_slice(
+    array_merge([$productId], $recentProductIds),
+    0,
+    4
+);
+$recentProducts = [];
+$recentIds = $_SESSION['recently_viewed_products'];
+if ($recentIds) {
+    $placeholders = implode(',', array_fill(0, count($recentIds), '?'));
+    try {
+        $stmt = $pdo->prepare(
+            "SELECT id, ten, gia, gia_khuyen_mai, anh_chinh FROM product "
+            . "WHERE hien_thi = 1 AND id IN ($placeholders)"
+        );
+        $stmt->execute($recentIds);
+        $productsById = [];
+        foreach ($stmt->fetchAll() as $recentProduct) {
+            $productsById[(int)$recentProduct['id']] = $recentProduct;
+        }
+        foreach ($recentIds as $recentId) {
+            if (isset($productsById[$recentId])) {
+                $recentProducts[] = $productsById[$recentId];
+            }
+        }
+    } catch (PDOException $exception) {
+        error_log('Recently viewed product lookup failed: ' . $exception->getMessage());
+    }
+}
 $similarProducts = [];
 try {
     $category = trim((string)($product['danh_muc'] ?? ''));
-    $similarSql = 'SELECT id, ten, gia, gia_khuyen_mai, anh_chinh, rating, so_danh_gia '
+    $similarSql = 'SELECT id, ten, gia, gia_khuyen_mai, anh_chinh, mo_ta_ngan, '
+        . 'rating, so_danh_gia, da_ban, luot_xem, luot_yeu_thich '
         . 'FROM product WHERE hien_thi = 1 AND id <> ?';
     $parameters = [$productId];
     if ($category !== '') {
@@ -154,8 +245,10 @@ require_once __DIR__ . '/../layouts/header.php';
                         <a class="pd-spec-shortcut" href="#product-information" data-specs-shortcut>Xem thông số<br>kỹ thuật <i class="bi bi-arrow-down"></i></a>
                     </div>
                     <div class="pd-social">
-                        <a href="https://zalo.me/0983537155" aria-label="Tư vấn qua Zalo" class="zalo-mark">Zalo</a>
-                        <a href="https://m.me/ibptechnology" aria-label="Tư vấn qua Messenger"><i class="bi bi-messenger"></i></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= rawurlencode(BASE_URL . 'product/detail.php?id=' . $productId) ?>" target="_blank" rel="noopener noreferrer" aria-label="Chia sẻ qua Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="https://zalo.me/0983537155" target="_blank" rel="noopener noreferrer" aria-label="Tư vấn qua Zalo" class="zalo-mark">Zalo</a>
+                        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <span class="pd-social-qr" aria-hidden="true" title="Mã QR sản phẩm"><i class="bi bi-qr-code"></i></span>
                     </div>
                 </div>
 
@@ -199,7 +292,10 @@ require_once __DIR__ . '/../layouts/header.php';
                     <?php if ($variants): ?>
                         <div class="pd-variants"><b>Phiên bản</b><div class="pd-variant-list">
                             <?php foreach ($variants as $index => $variant): ?>
-                                <?php $variantImage = asset_url($variant['image_url'] ?? null) ?: $baseImage; ?>
+                                <?php
+                                $variantImage = asset_url($variant['image_url'] ?? null)
+                                    ?: $a2GalleryImages[$index % count($a2GalleryImages)];
+                                ?>
                                 <button
                                     type="button"
                                     class="pd-variant <?= $index === 0 ? 'is-selected' : '' ?>"
@@ -214,10 +310,16 @@ require_once __DIR__ . '/../layouts/header.php';
                             <?php endforeach; ?>
                         </div></div>
                     <?php endif; ?>
-                    <?php if (!empty($product['thong_tin_uu_dai'])): ?>
+                    <?php if ($promotionLines): ?>
                         <div class="pd-promotion">
                             <h2><i class="bi bi-gift-fill"></i> ƯU ĐÃI KHI MUA HÀNG:</h2>
-                            <p><?= nl2br(e($product['thong_tin_uu_dai'])) ?></p>
+                            <ul>
+                                <?php foreach ($promotionLines as $promotionLine): ?>
+                                    <?php if (trim($promotionLine) !== ''): ?>
+                                        <li><?= e(trim($promotionLine)) ?></li>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </ul>
                         </div>
                     <?php endif; ?>
                     <div class="pd-buy-row">
@@ -319,18 +421,39 @@ require_once __DIR__ . '/../layouts/header.php';
                         </div>
                         <div class="pd-info-panel is-visible" data-info-panel="specs" id="technical-specs">
                             <div class="pd-spec-table">
-                                <?php foreach ($specs as $label => $value): ?>
+                                <?php foreach ($visibleSpecs as $label => $value): ?>
                                     <div>
                                         <span><?= e((string)$label) ?></span>
                                         <b><?= e((string)$value) ?></b>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-                            <a href="#technical-specs" class="pd-more-specs">
+                            <button type="button" class="pd-more-specs" data-open-specs>
                                 Xem chi tiết thông số kỹ thuật
-                            </a>
+                            </button>
                         </div>
                     </section>
+
+                    <dialog class="pd-spec-dialog" data-spec-dialog aria-labelledby="pd-spec-dialog-title">
+                        <div class="pd-spec-dialog-header">
+                            <h2 id="pd-spec-dialog-title">THÔNG SỐ KỸ THUẬT</h2>
+                            <button type="button" data-close-specs aria-label="Đóng thông số kỹ thuật">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                        <div class="pd-spec-table">
+                            <?php if ($modalSpecs): ?>
+                                <?php foreach ($modalSpecs as $label => $value): ?>
+                                    <div>
+                                        <span><?= e((string)$label) ?></span>
+                                        <b><?= e((string)$value) ?></b>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>Thông số kỹ thuật của sản phẩm chưa được cập nhật.</p>
+                            <?php endif; ?>
+                        </div>
+                    </dialog>
 
                     <section class="pd-reviews" id="reviews">
                         <div class="pd-review-heading"><h2>Reviews - <?= e($product['ten']) ?></h2></div>
@@ -438,6 +561,25 @@ require_once __DIR__ . '/../layouts/header.php';
                             <button type="submit">ĐĂNG KÝ</button>
                         </form>
                     </section>
+                    <?php if ($recentProducts): ?>
+                    <section class="detail-card pd-viewed">
+                        <h2>SẢN PHẨM ĐÃ XEM</h2>
+                        <?php foreach ($recentProducts as $recentProduct): ?>
+                            <?php $recentPrice = (float)($recentProduct['gia_khuyen_mai'] ?: $recentProduct['gia']); ?>
+                            <a href="<?= BASE_PATH ?>/product/detail.php?id=<?= (int)$recentProduct['id'] ?>">
+                                <img
+                                    src="<?= e(asset_url($recentProduct['anh_chinh'] ?? null) ?: $asset('sanpham.png')) ?>"
+                                    alt=""
+                                    loading="lazy"
+                                >
+                                <span>
+                                    <?= e($recentProduct['ten']) ?>
+                                    <b><?= money($recentPrice) ?></b>
+                                </span>
+                            </a>
+                        <?php endforeach; ?>
+                    </section>
+                    <?php endif; ?>
                 </aside>
             </section>
 
@@ -466,8 +608,11 @@ require_once __DIR__ . '/../layouts/header.php';
                                         <del class="price-old"><?= money($similarOldPrice) ?></del>
                                     <?php endif; ?>
                                 </div>
+                                <div class="product-card-desc"><?= e($similarProduct['mo_ta_ngan'] ?? '') ?></div>
                                 <div class="product-card-meta">
-                                    <span class="rating"><strong><?= number_format((float)$similarProduct['rating'], 1) ?></strong> ★ <small>(<?= (int)$similarProduct['so_danh_gia'] ?>)</small></span>
+                                    <span class="meta-item"><i class="bi bi-eye"></i> <?= number_format((int)$similarProduct['luot_xem']) ?></span>
+                                    <span class="meta-item rating"><strong><?= number_format((float)$similarProduct['rating'], 1) ?></strong> <i class="bi bi-star-fill"></i> <small>(<?= (int)$similarProduct['so_danh_gia'] ?>)</small></span>
+                                    <span class="meta-item"><i class="bi bi-heart"></i> (<?= number_format((int)$similarProduct['luot_yeu_thich']) ?>)</span>
                                 </div>
                                 <div class="product-card-actions">
                                     <form method="post" action="<?= BASE_PATH ?>/cart/add.php" class="card-cart-form">
@@ -488,5 +633,5 @@ require_once __DIR__ . '/../layouts/header.php';
         </section>
     </div>
 </main>
-<script src="<?= BASE_PATH ?>/assets/js/product-detail.js?v=4"></script>
+<script src="<?= BASE_PATH ?>/assets/js/product-detail.js?v=5"></script>
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>

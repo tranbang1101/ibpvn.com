@@ -180,6 +180,23 @@
         document.querySelector('#product-information')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
+    const specsDialog = page.querySelector('[data-spec-dialog]');
+    page.querySelector('[data-open-specs]')?.addEventListener('click', function () {
+        if (specsDialog && typeof specsDialog.showModal === 'function' && !specsDialog.open) {
+            specsDialog.showModal();
+        }
+    });
+    page.querySelector('[data-close-specs]')?.addEventListener('click', function () {
+        if (specsDialog && typeof specsDialog.close === 'function' && specsDialog.open) {
+            specsDialog.close();
+        }
+    });
+    specsDialog?.addEventListener('click', function (event) {
+        if (event.target === specsDialog && typeof specsDialog.close === 'function') {
+            specsDialog.close();
+        }
+    });
+
     const reviewItems = Array.from(page.querySelectorAll('[data-review-list] .pd-review-item'));
     const reviewPageSize = 3;
     const reviewPages = Math.max(1, Math.ceil(reviewItems.length / reviewPageSize));
@@ -241,6 +258,7 @@
         scrollSimilar(1);
     });
     similarTrack?.addEventListener('scroll', updateSimilarControls, { passive: true });
+    similarTrack?.addEventListener('scrollend', updateSimilarControls, { passive: true });
     window.addEventListener('resize', updateSimilarControls);
     updateSimilarControls();
 
