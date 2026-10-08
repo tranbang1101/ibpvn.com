@@ -2990,7 +2990,7 @@
 
 .pd-similar-card {
     display: flex;
-    flex: 0 0 calc((100% - 48px) / 5);
+    flex: 0 0 calc((100% - 40px) / 5);
     flex-direction: column;
     width: auto;
     scroll-snap-align: start;
