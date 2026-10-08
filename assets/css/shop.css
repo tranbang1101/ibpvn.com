@@ -146,7 +146,7 @@
     min-height: 42px;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
 }
 
 .catalog-product-card .product-card-meta {
@@ -3011,7 +3011,7 @@
 .pd-similar-card .product-card-body {
     flex: 1;
     gap: 8px;
-    padding: 10px;
+    padding: 6px;
 }
 
 .pd-similar-card .product-card-name {
@@ -3021,8 +3021,8 @@
 
 .pd-similar-card .product-card-price {
     justify-content: flex-start;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 7px;
+    flex-wrap: nowrap;
 }
 
 .pd-similar-card .product-card-desc {
