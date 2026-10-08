@@ -111,19 +111,29 @@ $a2DefaultSpecs = [
     'Công suất lọc/phút' => '1.1 L/phút',
     'Phương pháp sục rửa' => 'Tự động làm sạch',
 ];
-$modalSpecs = $specs;
-$visibleSpecs = array_slice($specs, 0, 4, true);
-if ($isA2Product) {
-    $modalSpecs = array_merge($a2DefaultSpecs, $specs);
-    $visibleSpecs = [
+$defaultSpecs = $isA2Product
+    ? $a2DefaultSpecs
+    : [
+        'Thương hiệu' => $product['thuong_hieu'] ?: 'Đang cập nhật',
+        'Danh mục' => $product['danh_muc'] ?: 'Đang cập nhật',
+        'Bảo hành' => $product['bao_hanh'] ?: 'Đang cập nhật',
+        'Điện áp' => 'AC 220V / 50Hz',
+        'Công suất' => 'Theo cấu hình sản phẩm',
+        'Kích thước' => 'Vui lòng liên hệ tư vấn',
+        'Trọng lượng' => 'Vui lòng liên hệ tư vấn',
+        'Xuất xứ' => $productOrigin,
+    ];
+$modalSpecs = $isA2Product
+    ? array_slice(array_replace($a2DefaultSpecs, $specs), 0, 8, true)
+    : array_slice($specs + $defaultSpecs, 0, 8, true);
+$visibleSpecs = $isA2Product
+    ? [
         'Xuất xứ' => $productOrigin,
         'Số cấp lọc' => $specs['Số cấp lọc'] ?? $a2DefaultSpecs['Số cấp lọc'],
         'Chức năng' => $specs['Chức năng'] ?? $a2DefaultSpecs['Chức năng'],
         'Bảo hành' => $product['bao_hanh'] ?: '24 tháng',
-    ];
-}
-$modalSpecs = array_slice($modalSpecs, 0, 8, true);
-$visibleSpecs = array_slice($visibleSpecs, 0, 4, true);
+    ]
+    : array_slice($specs + $defaultSpecs, 0, 4, true);
 $currentPrice = (float)($product['gia_khuyen_mai'] ?: $product['gia']);
 $originalPrice = (float)$product['gia'];
 $discountPercent = $originalPrice > $currentPrice ? (int)round(($originalPrice - $currentPrice) / $originalPrice * 100) : 0;
@@ -132,20 +142,12 @@ $reviewCount = (int)($product['so_danh_gia'] ?? 0);
 $baseImage = asset_url($images[0]['image_url'] ?? null) ?: $image;
 $pageTitle = $product['ten'] . ' | IBP Technology';
 $defaultVariantId = (int)($variants[0]['id'] ?? 0);
-$promotionLines = [];
-$storedPromotionLines = !empty($product['thong_tin_uu_dai'])
-    ? (preg_split('/\r\n|\r|\n/', trim((string)$product['thong_tin_uu_dai'])) ?: [])
-    : [];
-if ($isA2Product && count($storedPromotionLines) < 4) {
-    $promotionLines = [
-        'LẮP Thêm LÕI LỌC NƯỚC ION KIỀM ALKALINE HYDROGEN - NHẬP KHẨU HÀN QUỐC chỉ 500.000Đ (Giá thị trường 950.000đ)',
-        'Tặng thiết bị kiểm tra độ tinh khiết của nước TDS trị giá 150.000đ',
-        'Tặng gói lắp đặt và phụ kiện trị giá 500.000đ',
-        'Tặng 2.000.000đ đồng khi mua Lọc đầu nguồn và Heatpump A. O. Smith',
-    ];
-} else {
-    $promotionLines = $storedPromotionLines;
-}
+$promotionLines = [
+    'LẮP Thêm LÕI LỌC NƯỚC ION KIỀM ALKALINE HYDROGEN - NHẬP KHẨU HÀN QUỐC chỉ 500.000Đ (Giá thị trường 950.000đ)',
+    'Tặng thiết bị kiểm tra độ tinh khiết của nước TDS trị giá 150.000đ',
+    'Tặng gói lắp đặt và phụ kiện trị giá 500.000đ',
+    'Tặng 2.000.000đ đồng khi mua Lọc đầu nguồn và Heatpump A. O. Smith',
+];
 $storedRecentIds = $_SESSION['recently_viewed_products'] ?? [];
 $recentProductIds = is_array($storedRecentIds)
     ? array_values(array_unique(array_filter(
@@ -633,5 +635,5 @@ require_once __DIR__ . '/../layouts/header.php';
         </section>
     </div>
 </main>
-<script src="<?= BASE_PATH ?>/assets/js/product-detail.js?v=5"></script>
+<script src="<?= BASE_PATH ?>/assets/js/product-detail.js?v=6"></script>
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>

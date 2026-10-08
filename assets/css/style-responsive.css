@@ -898,8 +898,6 @@ img, iframe, video { max-width: 100%; }
     .pd-top-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
     .pd-main-visual { height: auto; aspect-ratio: 1 / .92; border-radius: 7px; }
     .pd-main-visual > img { width: 78%; height: 78%; }
-    .pd-award { top: 12px; right: 12px; width: 55px; height: 55px; border-width: 2px; }
-    .pd-award i { font-size: 14px; }
     .pd-gallery-bottom { gap: 5px; margin-top: 8px; }
     .pd-thumbnails { gap: 6px; overflow-x: auto; scrollbar-width: none; }
     .pd-thumb { width: 61px; height: 58px; flex-basis: 61px; }
@@ -1057,7 +1055,17 @@ main.product-detail-redesign .pd-similar-card .price-current { font-size: 18px !
 main.product-detail-redesign .pd-similar-card .badge-hot,
 main.product-detail-redesign .pd-similar-card .badge-discount::after { font-size: 14px !important; }
 main.product-detail-redesign .pd-similar-card .product-card-image { height: 220px; flex-basis: 220px; }
-main.product-detail-redesign .pd-similar-card .product-card-desc { min-height: 80px; height: auto; line-height: 1.45; }
+main.product-detail-redesign .pd-similar-card .product-card-desc {
+    display: -webkit-box;
+    min-height: 80px;
+    height: 80px;
+    max-height: 80px;
+    overflow: hidden;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+}
 main.product-detail-redesign .pd-review-summary { grid-template-columns: minmax(90px, 105px) minmax(0, 1fr) minmax(145px, 180px); }
 main.product-detail-redesign .pd-rating-bars > div { grid-template-columns: 36px minmax(36px, 1fr) 76px; gap: 7px; }
 
@@ -1071,8 +1079,8 @@ main.product-detail-redesign .pd-rating-bars > div { grid-template-columns: 36px
     main.product-detail-redesign .pd-similar-card { flex-basis: calc((100% - 12px) / 1.45); }
     main.product-detail-redesign .pd-similar-card .product-card-image { height: 190px; flex-basis: 190px; }
     main.product-detail-redesign .pd-similar-arrow { width: 40px; height: 40px; }
-    main.product-detail-redesign .pd-similar-arrow.is-prev { left: -5px; }
-    main.product-detail-redesign .pd-similar-arrow.is-next { right: -5px; }
+    main.product-detail-redesign .pd-similar-arrow.is-prev { left: 0; }
+    main.product-detail-redesign .pd-similar-arrow.is-next { right: 0; }
     main.product-detail-redesign .pd-consult-links { grid-template-columns: 1fr; }
     main.product-detail-redesign .pd-rating-bars > div { grid-template-columns: 36px minmax(36px, 1fr) 76px; }
     main.product-detail-redesign .pd-review-summary { grid-template-columns: 90px minmax(0, 1fr); }
@@ -1107,6 +1115,15 @@ main.product-detail-redesign .pd-social a {
     background: #fff;
     box-shadow: 0 2px 7px rgba(28, 50, 65, .14);
     font-size: 24px;
+}
+main.product-detail-redesign .pd-social-qr {
+    width: 40px;
+    height: 40px;
+    border-color: #edf0f2;
+    border-radius: 8px;
+    color: #222;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(28, 50, 65, .14);
 }
 main.product-detail-redesign .pd-social .zalo-mark {
     border-color: #168bff;

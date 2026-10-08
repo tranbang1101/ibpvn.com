@@ -261,7 +261,14 @@ ON DUPLICATE KEY UPDATE
 SET @sample_product_id = LAST_INSERT_ID();
 
 INSERT INTO productdetail (product_id, mo_ta_chi_tiet, thong_so_ky_thuat, bao_hanh, giao_hang_mien_phi, thong_tin_uu_dai)
-VALUES (@sample_product_id, 'Máy lọc nước A. O. Smith A2 với thiết kế dành cho nhu cầu sử dụng trong gia đình. Vui lòng liên hệ IBP để được xác nhận thông số, bảo hành và lắp đặt theo khu vực.', NULL, NULL, 1, NULL)
+VALUES (
+    @sample_product_id,
+    'Máy lọc nước A. O. Smith A2 với thiết kế dành cho nhu cầu sử dụng trong gia đình. Vui lòng liên hệ IBP để được xác nhận thông số, bảo hành và lắp đặt theo khu vực.',
+    '{"Xuất xứ":"Mỹ","Số cấp lọc":"7 cấp lọc","Chức năng":"Nước thường","Điện áp đầu vào":"AC 220V/ 50HZ","Công suất (tổng)":"85 W","Áp suất nước cấp phù hợp":"0.1MPa ~ 0.35MPa","Nhiệt độ nước cấp":"5~38°C","Công suất lọc/phút":"1.1 L/phút","Phương pháp sục rửa":"Tự động làm sạch"}',
+    '24 tháng',
+    1,
+    'LẮP Thêm LÕI LỌC NƯỚC ION KIỀM ALKALINE HYDROGEN - NHẬP KHẨU HÀN QUỐC chỉ 500.000Đ (Giá thị trường 950.000đ)\nTặng thiết bị kiểm tra độ tinh khiết của nước TDS trị giá 150.000đ\nTặng gói lắp đặt và phụ kiện trị giá 500.000đ\nTặng 2.000.000đ đồng khi mua Lọc đầu nguồn và Heatpump A. O. Smith'
+)
 ON DUPLICATE KEY UPDATE
     mo_ta_chi_tiet = VALUES(mo_ta_chi_tiet),
     thong_so_ky_thuat = VALUES(thong_so_ky_thuat),
@@ -325,6 +332,21 @@ WHERE product_id = @sample_product_id
       'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 3',
       'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 4'
   );
+INSERT INTO product_addons (
+    product_id, ten, image_url, gia_goc, gia_khuyen_mai, thu_tu, hien_thi
+)
+VALUES
+    (@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 1', '/ibpvn.com/assets/images/loiloc.png', 300000, 300000, 1, 1),
+    (@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 2', '/ibpvn.com/assets/images/loiloc.png', 300000, 300000, 2, 1),
+    (@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 3', '/ibpvn.com/assets/images/loiloc.png', 300000, 300000, 3, 1),
+    (@sample_product_id, 'Lõi lọc Slim - tiện nghi an tâm mỗi ngày 4', '/ibpvn.com/assets/images/loiloc.png', 300000, 300000, 4, 1),
+    (@sample_product_id, 'Lõi lọc nước ion kiềm Alkaline Hydrogen', '/ibpvn.com/assets/images/loiloc.png', 950000, 500000, 5, 1)
+ON DUPLICATE KEY UPDATE
+    image_url = VALUES(image_url),
+    gia_goc = VALUES(gia_goc),
+    gia_khuyen_mai = VALUES(gia_khuyen_mai),
+    thu_tu = VALUES(thu_tu),
+    hien_thi = VALUES(hien_thi);
 
 DELETE FROM product_faq
 WHERE product_id = @sample_product_id
@@ -379,3 +401,45 @@ ON DUPLICATE KEY UPDATE
     gia_khuyen_mai = VALUES(gia_khuyen_mai),
     mo_ta_ngan = VALUES(mo_ta_ngan),
     anh_chinh = VALUES(anh_chinh);
+
+INSERT INTO product_variants (product_id, ten_phien_ban, image_url, sku, gia)
+SELECT p.id,
+       CONCAT('Phiên bản ', slots.slot),
+       CONCAT('/ibpvn.com/assets/images/a.o.smith-mini', slots.slot, '.png'),
+       CONCAT('DETAIL-', p.id, '-', slots.slot),
+       COALESCE(p.gia_khuyen_mai, p.gia)
+FROM product p
+CROSS JOIN (
+    SELECT 1 AS slot UNION ALL SELECT 2 UNION ALL SELECT 3
+) AS slots
+WHERE p.hien_thi = 1
+  AND (SELECT COUNT(*) FROM product_variants v WHERE v.product_id = p.id) < 3
+  AND NOT EXISTS (
+      SELECT 1
+      FROM product_variants v
+      WHERE v.product_id = p.id
+        AND v.sku = CONCAT('DETAIL-', p.id, '-', slots.slot)
+  );
+
+INSERT INTO product_addons (
+    product_id, ten, image_url, gia_goc, gia_khuyen_mai, thu_tu, hien_thi
+)
+SELECT p.id,
+       CONCAT('Phụ kiện đi kèm ', slots.slot),
+       '/ibpvn.com/assets/images/loiloc.png',
+       300000,
+       300000,
+       100 + slots.slot,
+       1
+FROM product p
+CROSS JOIN (
+    SELECT 1 AS slot UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
+) AS slots
+WHERE p.hien_thi = 1
+  AND (SELECT COUNT(*) FROM product_addons a WHERE a.product_id = p.id AND a.hien_thi = 1) < 5
+  AND NOT EXISTS (
+      SELECT 1
+      FROM product_addons a
+      WHERE a.product_id = p.id
+        AND a.ten = CONCAT('Phụ kiện đi kèm ', slots.slot)
+  );

@@ -19,6 +19,8 @@
     display: block;
     width: 100%;
     height: 44px;
+    margin: 0;
+    padding: 0;
 }
 .header-banner-image {
     display: block;
@@ -807,6 +809,7 @@
     position: relative;
     width: 100%;
     margin-bottom: 30px;
+    padding: 0;
 }
 .product-promo .product-swiper {
     width: 100%;
@@ -876,30 +879,23 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 90px;
-    height: 90px;
-    overflow: hidden;
-    background: transparent;
-    clip-path: none;
-    z-index: 5;
+    width: 76px;
+    height: 68px;
+    background: #D7202C;
+    clip-path: polygon(100% 0, 0 0, 100% 100%);
+    z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 12px 8px 0 0;
 }
 .badge-discount::after {
     content: "-10%";
-    position: absolute;
-    width: 110px;
-    height: 20px;
     color: #FFFFFF;
-    background: #DA0500;
-    top: 16px;
-    right: -28px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    line-height: 28px;
-    transform: rotate(45deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
+    transform: rotate(42deg);
+    display: block;
 }
 /* Body */
 .product-promo .product-card-body {
@@ -914,6 +910,7 @@
     font-size: 14px;
     line-height: 150%;
     color: #252525;
+    margin: 0;
     height: 42px;
     overflow: hidden;
     display: -webkit-box;
@@ -1157,6 +1154,8 @@
 }
 .product-promo.is-expanded .product-swiper {
     width: 100%;
+    margin: 0;
+    padding: 0;
     overflow: visible;
     clip-path: none;
 }
@@ -1336,6 +1335,7 @@
     gap: 2px;
 }
 .review-name {
+    margin: 0;
     font-size: 18px;
     font-weight: 700;
     color: #030712;
@@ -1367,6 +1367,7 @@
 }
 .review-text {
     min-height: 34px;
+    margin: 0;
     padding-top: 10px;
     border-top: 1px solid #e5e7eb;
     font-size: 14px;
@@ -1383,6 +1384,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    padding: 0;
 }
 .faq-item {
     display: block;
@@ -1394,6 +1396,7 @@
     align-items: center;
     gap: 12px;
     width: 100%;
+    padding: 0;
     border: 0;
     background: transparent;
     color: inherit;
@@ -1644,6 +1647,7 @@
     line-height: 28px;
 }
 .news-card-title {
+    margin: 0;
     font-weight: 500;
     font-size: 17px;
     line-height: 26px;
@@ -1830,6 +1834,7 @@
     font-size: 16px;
     line-height: 19px;
     color: #FFFFFF;
+    margin: 0;
 }
 /* Heading */
 .footer-heading {
@@ -1846,14 +1851,16 @@
 /* Contact list */
 .footer-contact-list {
     list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 .footer-contact-list li {
     font-weight: 700;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.4;
     color: #FFFFFF;
 }
 .footer-contact-list strong {
@@ -1867,6 +1874,8 @@
 }
 .footer-menu {
     list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 16px;

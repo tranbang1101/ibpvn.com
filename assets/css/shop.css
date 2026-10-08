@@ -1610,38 +1610,6 @@
     transform: scale(1.025);
 }
 
-.pd-award {
-    position: absolute;
-    z-index: 2;
-    top: 25px;
-    right: 24px;
-    width: 70px;
-    height: 70px;
-    display: grid;
-    align-content: center;
-    justify-items: center;
-    border: 3px solid #d9b84d;
-    border-radius: 50%;
-    color: #ae8425;
-    background: #fffdf1;
-    box-shadow: 0 2px 10px #bba35444;
-    font-size: 8px;
-    line-height: 1.05;
-    text-align: center;
-}
-
-.pd-award i {
-    font-size: 18px;
-}
-
-.pd-award b {
-    letter-spacing: .06em;
-}
-
-.pd-award small {
-    font-size: 6px;
-}
-
 .pd-gallery-arrow {
     position: absolute;
     z-index: 3;
@@ -2395,6 +2363,10 @@
     font-size: 9px;
     text-align: center;
     text-decoration: none;
+    width: 100%;
+    font-family: inherit;
+    background: #fff;
+    cursor: pointer;
 }
 
 .pd-more-specs:hover {
@@ -2755,7 +2727,9 @@
 
 .pd-viewed > a span {
     display: grid;
+    min-width: 0;
     gap: 3px;
+    overflow-wrap: anywhere;
 }
 
 .pd-viewed > a b {
@@ -2909,6 +2883,67 @@
     cursor: pointer;
 }
 
+.pd-spec-dialog {
+    width: min(720px, calc(100vw - 32px));
+    max-height: min(80vh, 760px);
+    padding: 0 20px 20px;
+    overflow: auto;
+    border: 1px solid #e1e8ec;
+    border-radius: 10px;
+    color: #26383f;
+    background: #fff;
+    box-shadow: 0 18px 60px rgba(16, 43, 59, .24);
+}
+
+.pd-spec-dialog[open] {
+    display: block;
+}
+
+.pd-spec-dialog::backdrop {
+    background: rgba(17, 37, 49, .55);
+}
+
+.pd-spec-dialog-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 -20px 14px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e7ecef;
+    background: #fff;
+}
+
+.pd-spec-dialog-header h2 {
+    margin: 0;
+    color: #078bce;
+    font-size: 18px;
+}
+
+.pd-spec-dialog-header button {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #51616a;
+    background: #f2f5f7;
+    cursor: pointer;
+}
+
+.pd-spec-dialog .pd-spec-table > div {
+    min-height: 44px;
+    font-size: 14px;
+}
+
+.pd-spec-dialog .pd-spec-table > div > b {
+    font-size: 14px;
+}
+
 .pd-similar-card .btn-buy-now {
     color: #fff;
     background: #078bce;
@@ -2936,6 +2971,7 @@
 /* Similar products: horizontal product-card rail with home-page proportions */
 .pd-similar-carousel {
     position: relative;
+    padding: 0 50px;
 }
 
 .pd-similar-grid {
@@ -3031,11 +3067,11 @@
 }
 
 .pd-similar-arrow.is-prev {
-    left: -14px;
+    left: 0;
 }
 
 .pd-similar-arrow.is-next {
-    right: -14px;
+    right: 0;
 }
 
 .pd-similar-arrow:hover:not(:disabled) {
@@ -3062,6 +3098,19 @@
     box-shadow: 0 2px 7px rgba(28, 50, 65, .14);
     font-size: 24px;
     transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.pd-social-qr {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border: 1px solid #edf0f2;
+    border-radius: 8px;
+    color: #222;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(28, 50, 65, .14);
+    font-size: 24px;
 }
 
 .pd-social a:hover {
@@ -3112,6 +3161,47 @@
     line-height: 1.15;
     text-align: center;
     white-space: nowrap;
+}
+
+.pd-similar-card {
+    align-self: stretch;
+    height: 100%;
+}
+
+.pd-similar-card .product-card-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+}
+
+.pd-similar-card .product-card-name {
+    height: 42px;
+    min-height: 42px;
+}
+
+.pd-similar-card .product-card-price {
+    min-height: 28px;
+}
+
+.pd-similar-card .product-card-desc {
+    display: -webkit-box;
+    height: 80px;
+    min-height: 80px;
+    max-height: 80px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+}
+
+.pd-similar-card .product-card-meta {
+    min-height: 34px;
+    align-content: flex-start;
+}
+
+.pd-similar-card .product-card-actions {
+    margin-top: auto;
 }
 
 .pd-consult-card {
