@@ -149,7 +149,7 @@
                     <article class="news-card">
                         <a href="{{ route('news.index') }}" class="news-card-image"><img src="{{ asset('assets/images/' . $image) }}" alt="{{ $title }}" loading="lazy"></a>
                         <div class="news-card-body">
-                            <span class="news-date">IBP Technology</span>
+                            <span class="news-date">Aug 19, 2025</span>
                             <h3 class="news-card-title">
                                 <a href="{{ route('news.index') }}">{{ $title }}</a>
                             </h3>
