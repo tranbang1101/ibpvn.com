@@ -33,11 +33,11 @@
     <div class="feature-bar" id="about">
         <div class="feature-bar-inner">
             @foreach([
-                ['bi-truck', 'Hỗ trợ giao hàng theo khu vực'],
-                ['bi-award', 'Bảo hành theo chính sách sản phẩm'],
-                ['bi-tags', 'Ưu đãi theo chương trình'],
-                ['bi-arrow-repeat', 'Hỗ trợ đổi trả theo chính sách'],
-                ['bi-headset', 'Tư vấn từ 8:00 đến 18:00'],
+                ['bi-truck', 'Giao hàng toàn quốc'],
+                ['bi-award', 'Bảo hành lâu dài'],
+                ['bi-tags', 'Ưu đãi thường xuyên'],
+                ['bi-arrow-repeat', 'Đổi trả miễn phí'],
+                ['bi-headset', 'Dịch vụ tư vấn 24/7'],
             ] as [$icon, $text])
                 <div class="feature-item"><div class="feature-icon"><i class="bi {{ $icon }}"></i></div><span class="feature-text">{{ $text }}</span></div>
             @endforeach
