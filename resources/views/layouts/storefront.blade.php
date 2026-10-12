@@ -20,7 +20,7 @@
 <body>
 @if(config('store.demo_mode'))
     <div class="demo-mode-banner" role="status">
-        <strong>BẢN DEMO CÔNG KHAI</strong>
+        <strong>BẢN DEMO</strong>
         <span>Đơn hàng chỉ mô phỏng; đăng nhập, tra cứu đơn và gửi yêu cầu tư vấn đã tắt. Không nhập thông tin cá nhân.</span>
     </div>
 @endif
