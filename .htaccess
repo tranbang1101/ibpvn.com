@@ -1,10 +1,18 @@
 Options -Indexes
+DirectoryIndex index.php
 
 RewriteEngine On
 RewriteBase /ibpvn.com/
 
-# Keep source design files out of the public web root.
-RewriteRule \.fig$ - [F,NC,L]
+RewriteRule ^\. - [F,NC,L]
+RewriteRule ^(?:app|bootstrap|config|database|resources|routes|storage|tests|vendor)(?:/|$) - [F,NC,L]
+RewriteRule ^(?:artisan|composer\.(?:json|lock)|phpunit\.xml|package(?:-lock)?\.json|vite\.config\.js|README\.md)$ - [F,NC,L]
+RewriteRule ^public(?:/|$) - [F,NC,L]
 
-# A direct request to the project root opens the storefront.
-RewriteRule ^$ home/home.php [L]
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_URI} !\.php$ [NC]
+RewriteRule ^ - [L]
+
+RewriteRule ^index\.php$ - [L,NC]
+RewriteRule \.php$ - [F,NC,L]
+RewriteRule ^ index.php [L]

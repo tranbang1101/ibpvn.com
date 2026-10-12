@@ -146,7 +146,7 @@
     min-height: 42px;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    line-clamp: 2;
+    -webkit-line-clamp: 2;
 }
 
 .catalog-product-card .product-card-meta {
@@ -2990,7 +2990,7 @@
 
 .pd-similar-card {
     display: flex;
-    flex: 0 0 calc((100% - 40px) / 5);
+    flex: 0 0 calc((100% - 48px) / 5);
     flex-direction: column;
     width: auto;
     scroll-snap-align: start;
@@ -3011,7 +3011,7 @@
 .pd-similar-card .product-card-body {
     flex: 1;
     gap: 8px;
-    padding: 6px;
+    padding: 10px;
 }
 
 .pd-similar-card .product-card-name {
@@ -3021,8 +3021,8 @@
 
 .pd-similar-card .product-card-price {
     justify-content: flex-start;
-    gap: 7px;
-    flex-wrap: nowrap;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .pd-similar-card .product-card-desc {

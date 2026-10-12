@@ -1,5 +1,11 @@
 <?php
-require_once __DIR__ . '/config/config.php';
 
-header('Location: ' . BASE_PATH . '/home/home.php', true, 302);
-exit;
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+
+require __DIR__.'/vendor/autoload.php';
+
+$app = require_once __DIR__.'/bootstrap/app.php';
+
+$app->handleRequest(Request::capture());

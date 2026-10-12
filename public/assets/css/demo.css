@@ -1,0 +1,28 @@
+.demo-mode-banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: #fff2d8;
+    color: #593b00;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.demo-mode-banner strong {
+    flex: 0 0 auto;
+    color: #8a5200;
+}
+
+@media (max-width: 640px) {
+    .demo-mode-banner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+        padding: 8px 14px;
+        font-size: 12px;
+        text-align: left;
+    }
+}
