@@ -156,7 +156,21 @@ class LegacySchemaModelsTest extends TestCase
             'trang_thai' => true,
         ]);
 
-        $this->get(route('home'))->assertOk()->assertSee('Danh mục nổi bật');
+        $homeResponse = $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Danh mục nổi bật')
+            ->assertSee('aria-label="Menu điều hướng"', false)
+            ->assertSee('Giới Thiệu')
+            ->assertSee('Dịch Vụ')
+            ->assertSee('Cẩm Nang')
+            ->assertSee('Liên Hệ');
+        $mobileNavigation = substr(
+            $homeResponse->getContent(),
+            strpos($homeResponse->getContent(), '<nav class="mobile-navigation-panel"'),
+        );
+        $mobileNavigation = substr($mobileNavigation, 0, strpos($mobileNavigation, '</nav>'));
+        $this->assertSame(4, substr_count($mobileNavigation, '<a '));
+        $this->assertStringNotContainsString('Máy lọc nước', $mobileNavigation);
         $this->get(route('products.index', ['category' => 'may-loc-nuoc']))
             ->assertOk()
             ->assertSee('Water filter A2');

@@ -128,47 +128,51 @@ document.querySelectorAll('.faq-list').forEach(function (list) {
     });
 });
 
-/* RESPONSIVE HEADER: category drawer and compact search */
+/* RESPONSIVE HEADER: navigation drawer and compact search */
 (function () {
     const header = document.querySelector('.site-header');
     const menuButton = document.querySelector('.mobile-menu-toggle');
-    const categoryPanel = document.getElementById('mobile-category-panel');
+    const navigationPanel = document.getElementById('mobile-navigation-panel');
     const searchButton = document.querySelector('.mobile-search-toggle');
     if (!header) return;
 
-    function closeCategoryMenu() {
-        if (!menuButton || !categoryPanel) return;
+    function closeNavigationMenu() {
+        if (!menuButton || !navigationPanel) return;
         menuButton.setAttribute('aria-expanded', 'false');
-        menuButton.setAttribute('aria-label', 'Mở danh mục sản phẩm');
+        menuButton.setAttribute('aria-label', 'Mở menu điều hướng');
         menuButton.querySelector('i')?.classList.replace('bi-x-lg', 'bi-list');
-        categoryPanel.hidden = true;
+        navigationPanel.hidden = true;
     }
 
     menuButton?.addEventListener('click', function () {
         const opening = this.getAttribute('aria-expanded') !== 'true';
         this.setAttribute('aria-expanded', String(opening));
-        this.setAttribute('aria-label', opening ? 'Đóng danh mục sản phẩm' : 'Mở danh mục sản phẩm');
+        this.setAttribute('aria-label', opening ? 'Đóng menu điều hướng' : 'Mở menu điều hướng');
         this.querySelector('i')?.classList.toggle('bi-list', !opening);
         this.querySelector('i')?.classList.toggle('bi-x-lg', opening);
-        if (categoryPanel) categoryPanel.hidden = !opening;
+        if (navigationPanel) navigationPanel.hidden = !opening;
         header.classList.remove('mobile-search-open');
         searchButton?.setAttribute('aria-expanded', 'false');
+    });
+
+    navigationPanel?.addEventListener('click', function (event) {
+        if (event.target.closest('a')) closeNavigationMenu();
     });
 
     searchButton?.addEventListener('click', function () {
         const opening = !header.classList.contains('mobile-search-open');
         header.classList.toggle('mobile-search-open', opening);
         this.setAttribute('aria-expanded', String(opening));
-        closeCategoryMenu();
+        closeNavigationMenu();
         if (opening) header.querySelector('.header-search-input')?.focus();
     });
 
     document.addEventListener('click', function (event) {
-        if (categoryPanel && !header.contains(event.target)) closeCategoryMenu();
+        if (navigationPanel && !header.contains(event.target)) closeNavigationMenu();
     });
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
-            closeCategoryMenu();
+            closeNavigationMenu();
             header.classList.remove('mobile-search-open');
             searchButton?.setAttribute('aria-expanded', 'false');
         }

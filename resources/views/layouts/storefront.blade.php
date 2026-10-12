@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/fancybox.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css?v=11') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/shop.css?v=11') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=17') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/shop.css?v=12') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=18') }}">
     @if(config('store.demo_mode'))
         <link rel="stylesheet" href="{{ asset('assets/css/demo.css?v=1') }}">
     @endif
@@ -20,7 +20,7 @@
 <body>
 @if(config('store.demo_mode'))
     <div class="demo-mode-banner" role="status">
-        <strong>BẢN DEMO</strong>
+        <strong>BẢN DEMO CÔNG KHAI</strong>
         <span>Đơn hàng chỉ mô phỏng; đăng nhập, tra cứu đơn và gửi yêu cầu tư vấn đã tắt. Không nhập thông tin cá nhân.</span>
     </div>
 @endif
@@ -43,7 +43,7 @@
     <div class="header-main">
         <div class="header-main-inner">
             <div class="mobile-header-tools">
-                <button class="mobile-menu-toggle" type="button" aria-label="Mở danh mục sản phẩm" aria-controls="mobile-category-panel" aria-expanded="false">
+                <button class="mobile-menu-toggle" type="button" aria-label="Mở menu điều hướng" aria-controls="mobile-navigation-panel" aria-expanded="false">
                     <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <a class="mobile-shop-link" href="{{ route('products.index') }}"><i class="bi bi-shop" aria-hidden="true"></i><span>Xem Shop</span></a>
@@ -74,10 +74,11 @@
             </div>
         </div>
     </div>
-    <nav class="mobile-category-panel" id="mobile-category-panel" aria-label="Danh mục sản phẩm" hidden>
-        @foreach(config('store.categories') as $key => $name)
-            <a href="{{ route('products.index', ['category' => $key]) }}">{{ $name }} <i class="bi bi-chevron-right"></i></a>
-        @endforeach
+    <nav class="mobile-navigation-panel" id="mobile-navigation-panel" aria-label="Menu điều hướng" hidden>
+        <a href="{{ route('home') }}#about">Giới Thiệu <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+        <a href="{{ route('contact') }}">Dịch Vụ <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+        <a href="{{ route('news.index') }}">Cẩm Nang <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+        <a href="{{ route('contact') }}">Liên Hệ <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
     </nav>
     <nav class="header-navigation">
         <div class="header-navigation-inner">
@@ -113,8 +114,8 @@
                     <ul class="footer-contact-list">
                         <li><strong>Hotline:</strong> +84 983 537 155</li>
                         <li><strong>Email:</strong> info@ibpvn.com</li>
-                        <li><strong>Address:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
-                        <li><strong>Office:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
+                        <li><strong>Địa chỉ:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
+                        <li><strong>Văn phòng:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
                     </ul>
                 </div>
             </div>
@@ -131,7 +132,7 @@
                     <h4 class="footer-heading blue">Chính sách</h4>
                     <ul class="footer-menu">
                         @foreach(['warranty' => 'bảo hành', 'insurance' => 'bảo hiểm', 'refund' => 'hoàn tiền', 'promotion' => 'khuyến mãi'] as $topic => $name)
-                            <li><a href="{{ route('contact', ['topic' => $topic]) }}">Chính sách {{ $name }}</a></li>
+                            <li><a href="{{ route('contact', ['topic' => $topic]) }}">Hỏi về chính sách {{ $name }}</a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -150,7 +151,7 @@
 </footer>
 <script src="{{ asset('assets/js/fancybox.umd.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js"></script>
-<script src="{{ asset('assets/js/main.js?v=10') }}"></script>
+<script src="{{ asset('assets/js/main.js?v=11') }}"></script>
 <script src="{{ asset('assets/js/cart.js?v=2') }}"></script>
 <script src="{{ asset('assets/js/home-products.js?v=4') }}"></script>
 <script src="{{ asset('assets/js/iconify-icon.min.js') }}"></script>

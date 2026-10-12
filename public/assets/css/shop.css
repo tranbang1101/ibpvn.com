@@ -2708,6 +2708,16 @@
     cursor: pointer;
 }
 
+.pd-consult-feedback {
+    margin: 0 0 8px;
+    padding: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, .92);
+    color: #15516e;
+    font-size: 10px;
+    line-height: 1.45;
+}
+
 .pd-viewed > a {
     display: flex;
     gap: 8px;
