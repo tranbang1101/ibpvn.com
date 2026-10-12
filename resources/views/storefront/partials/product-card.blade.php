@@ -44,7 +44,7 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <button type="submit" class="btn-add-cart">Thêm vào giỏ</button>
             </form>
-            <a href="{{ $productUrl }}" class="btn-buy-now">Xem chi tiết</a>
+            <a href="{{ $productUrl }}" class="btn-buy-now">Mua Ngay</a>
         </div>
     </div>
 </article>
