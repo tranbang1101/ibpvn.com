@@ -138,7 +138,12 @@
                 </div>
             </div>
             <div class="footer-col footer-social">
-                <div class="footer-block"><h4 class="footer-heading blue">Fanpage</h4><div class="footer-fanpage"><img src="{{ asset('assets/images/fanpage.png') }}" alt="Fanpage"></div></div>
+                <div class="footer-block">
+                    <h4 class="footer-heading blue">Fanpage</h4>
+                    <div class="footer-fanpage">
+                        <img src="{{ asset('assets/images/fanpage.png') }}" alt="Fanpage">
+                    </div>
+                </div>
                 <div class="footer-block">
                     <h4 class="footer-heading blue">Bản đồ</h4>
                     <p class="footer-map-desc">Vị trí văn phòng IBP Technology tại Thủ Đức, TP. Hồ Chí Minh.</p>
