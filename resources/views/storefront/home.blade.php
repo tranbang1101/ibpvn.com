@@ -140,12 +140,21 @@
     </section>
     <section class="news-section">
         <div class="news-inner">
-            <div class="news-title-wrap"><h2 class="news-title">Tin tức &amp; Sự kiện</h2><span class="underline"></span></div>
+            <div class="news-title-wrap">
+                <h2 class="news-title">Tin tức &amp; Sự kiện</h2>
+                <span class="underline"></span>
+            </div>
             <div class="news-grid" id="newsGrid">
-                @foreach([['new1.png', 'Giải pháp nước sạch cho gia đình'], ['new2.png', 'Lựa chọn thiết bị lọc nước phù hợp'], ['new3.png', 'Hướng dẫn chăm sóc thiết bị'], ['new4.png', 'Tin tức và sự kiện IBP']] as [$image, $title])
+                @foreach([['new1.png', 'Giải pháp nước sạch cho gia đình'], ['new2.png', 'Lựa chọn thiết bị lọc nước phù hợp'], ['new3.png', 'Hướng dẫn chăm sóc thiết bị lõi lọc'], ['new4.png', 'New Apartment Nice in the Best Canadian Cities']] as [$image, $title])
                     <article class="news-card">
                         <a href="{{ route('news.index') }}" class="news-card-image"><img src="{{ asset('assets/images/' . $image) }}" alt="{{ $title }}" loading="lazy"></a>
-                        <div class="news-card-body"><span class="news-date">IBP Technology</span><h3 class="news-card-title"><a href="{{ route('news.index') }}">{{ $title }}</a></h3><a href="{{ route('news.index') }}" class="news-read-more">Xem thêm <i class="bi bi-arrow-right" aria-hidden="true"></i></a></div>
+                        <div class="news-card-body">
+                            <span class="news-date">IBP Technology</span>
+                            <h3 class="news-card-title">
+                                <a href="{{ route('news.index') }}">{{ $title }}</a>
+                            </h3>
+                            <a href="{{ route('news.index') }}" class="news-read-more">Read More <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                        </div>
                     </article>
                 @endforeach
             </div>
@@ -153,7 +162,10 @@
     </section>
     <section class="real-images-section">
         <div class="real-images-inner">
-            <div class="real-images-title-wrap"><h2 class="real-images-title">Hình Ảnh Thực Tế</h2><span class="underline"></span></div>
+            <div class="real-images-title-wrap">
+                <h2 class="real-images-title">Hình Ảnh Thực Tế</h2>
+                <span class="underline"></span>
+            </div>
             <div class="real-images-grid">@foreach(['thucte1.png', 'thucte2.png', 'thucte3.png', 'thucte4.png'] as $image)<div class="real-image-item"><img src="{{ asset('assets/images/' . $image) }}" alt="Hình ảnh thực tế tại IBP" loading="lazy"></div>@endforeach</div>
         </div>
     </section>
