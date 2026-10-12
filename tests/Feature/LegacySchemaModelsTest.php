@@ -160,13 +160,14 @@ class LegacySchemaModelsTest extends TestCase
             ->assertOk()
             ->assertSee('Danh mục nổi bật')
             ->assertSee('aria-label="Menu điều hướng"', false)
+            ->assertSee('aria-controls="mobile-category-panel"', false)
             ->assertSee('Giới Thiệu')
             ->assertSee('Dịch Vụ')
             ->assertSee('Cẩm Nang')
             ->assertSee('Liên Hệ');
         $mobileNavigation = substr(
             $homeResponse->getContent(),
-            strpos($homeResponse->getContent(), '<nav class="mobile-navigation-panel"'),
+            strpos($homeResponse->getContent(), '<nav class="mobile-navigation-panel mobile-category-panel"'),
         );
         $mobileNavigation = substr($mobileNavigation, 0, strpos($mobileNavigation, '</nav>'));
         $this->assertSame(4, substr_count($mobileNavigation, '<a '));

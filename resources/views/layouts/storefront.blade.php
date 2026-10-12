@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/style.css?v=11') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/shop.css?v=12') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=18') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=19') }}">
     @if(config('store.demo_mode'))
         <link rel="stylesheet" href="{{ asset('assets/css/demo.css?v=1') }}">
     @endif
@@ -43,7 +43,7 @@
     <div class="header-main">
         <div class="header-main-inner">
             <div class="mobile-header-tools">
-                <button class="mobile-menu-toggle" type="button" aria-label="Mở menu điều hướng" aria-controls="mobile-navigation-panel" aria-expanded="false">
+                <button class="mobile-menu-toggle" type="button" aria-label="Mở menu điều hướng" aria-controls="mobile-category-panel" aria-expanded="false">
                     <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <a class="mobile-shop-link" href="{{ route('products.index') }}"><i class="bi bi-shop" aria-hidden="true"></i><span>Xem Shop</span></a>
@@ -74,7 +74,7 @@
             </div>
         </div>
     </div>
-    <nav class="mobile-navigation-panel" id="mobile-navigation-panel" aria-label="Menu điều hướng" hidden>
+    <nav class="mobile-navigation-panel mobile-category-panel" id="mobile-category-panel" aria-label="Menu điều hướng" hidden>
         <a href="{{ route('home') }}#about">Giới Thiệu <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
         <a href="{{ route('contact') }}">Dịch Vụ <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
         <a href="{{ route('news.index') }}">Cẩm Nang <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
@@ -151,7 +151,7 @@
 </footer>
 <script src="{{ asset('assets/js/fancybox.umd.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js"></script>
-<script src="{{ asset('assets/js/main.js?v=11') }}"></script>
+<script src="{{ asset('assets/js/main.js?v=12') }}"></script>
 <script src="{{ asset('assets/js/cart.js?v=2') }}"></script>
 <script src="{{ asset('assets/js/home-products.js?v=4') }}"></script>
 <script src="{{ asset('assets/js/iconify-icon.min.js') }}"></script>

@@ -89,7 +89,7 @@ img, iframe, video { max-width: 100%; }
     .auth-wrap { max-width: 780px; }
 }
 
-/* Sticky mobile/tablet header and category drawer */
+/* Sticky mobile/tablet header and navigation drawer */
 @media (max-width: 850px) {
     html { scroll-padding-top: 70px; }
     .site-header { position: sticky; top: 0; z-index: 1000; background: #fff; }
@@ -171,6 +171,7 @@ img, iframe, video { max-width: 100%; }
         font-size: 10px;
         line-height: 1;
     }
+    .mobile-navigation-panel,
     .mobile-category-panel {
         position: absolute;
         top: 70px;
@@ -187,7 +188,9 @@ img, iframe, video { max-width: 100%; }
         border-bottom: 1px solid #dce7ed;
         box-shadow: 0 14px 25px rgba(14, 42, 58, .16);
     }
+    .mobile-navigation-panel[hidden],
     .mobile-category-panel[hidden] { display: none !important; }
+    .mobile-navigation-panel a,
     .mobile-category-panel a {
         display: flex;
         align-items: center;
@@ -199,7 +202,9 @@ img, iframe, video { max-width: 100%; }
         text-decoration: none;
         font-size: 14px;
     }
+    .mobile-navigation-panel a:last-child,
     .mobile-category-panel a:last-child { border-bottom: 0; }
+    .mobile-navigation-panel a i,
     .mobile-category-panel a i { color: #0082c8; }
     .mobile-search-open .header-search {
         position: absolute;
@@ -521,8 +526,8 @@ img, iframe, video { max-width: 100%; }
     .product-promo .product-card-actions { gap: 6px; margin-top: auto; }
     .btn-add-cart,
     .btn-buy-now { min-width: 0; height: 30px; padding: 0 4px; font-size: 11px; }
-    .product-promo.is-expanded .product-swiper { overflow: visible; }
-    .product-promo.is-expanded .product-swiper .swiper-wrapper {
+    .product-promo .product-swiper { overflow: visible; }
+    .product-promo .product-swiper .swiper-wrapper {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px 12px;
@@ -531,14 +536,13 @@ img, iframe, video { max-width: 100%; }
         transform: none !important;
         transition: none !important;
     }
-    .product-promo.is-expanded .product-swiper .swiper-slide {
+    .product-promo .product-swiper .swiper-slide {
         width: auto !important;
         height: auto !important;
         margin: 0 !important;
     }
-    .product-promo.is-expanded .product-swiper .swiper-wrapper { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .product-promo:not(.is-expanded) .product-slider-wrap .product-prev,
-    .product-promo:not(.is-expanded) .product-slider-wrap .product-next { display: flex; }
+    .product-promo:not(.is-expanded) .product-slider-wrap .product-next { display: none; }
     .product-slider-wrap .product-prev,
     .product-slider-wrap .product-next {
         top: auto;
@@ -740,7 +744,7 @@ img, iframe, video { max-width: 100%; }
     .feature-text { font-size: 14px; }
     .feature-icon i { color: #fff;}
     .product-promo-tabs { width: calc(100% + 28px); margin-left: -14px; padding-right: 14px; padding-left: 14px; }
-    .product-promo.is-expanded .product-swiper .swiper-wrapper { gap: 12px 9px; }
+    .product-promo .product-swiper .swiper-wrapper { gap: 12px 9px; }
     .product-card-body { padding: 7px; }
     .product-card-name { min-height: 36px; font-size: 12px; }
     .price-current { font-size: 15px; }
@@ -1137,6 +1141,51 @@ main.product-detail-redesign .pd-social .zalo-mark {
 main.product-detail-redesign .pd-social a:nth-child(3) {
     color: #e1306c;
     background: #fff;
+}
+
+/* Keep fixed-width desktop sections fluid as tablet screens narrow. */
+@media (max-width: 1100px) {
+    .contact-form-bottom {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 28px;
+    }
+    .contact-cta,
+    .quote-form {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        flex: 0 1 auto;
+    }
+    .quote-form { margin-left: 0; }
+    .dual-promo-inner { width: calc(100% - 40px); }
+    .dual-promo-image { height: auto; aspect-ratio: 400 / 150; }
+    .hero-banner-image { height: auto; aspect-ratio: 1540 / 638; }
+    .review-faq-top { min-width: 0; }
+    .customer-reviews,
+    .faq-section { min-width: 0; }
+}
+
+@media (min-width: 701px) and (max-width: 960px) {
+    .review-faq-top { flex-direction: column; gap: 32px; }
+    .customer-reviews,
+    .faq-section { width: 100%; }
+}
+
+@media (max-width: 700px) {
+    .quote-form {
+        width: 100%;
+        padding: 20px clamp(16px, 5vw, 26px) 24px;
+        border-radius: 24px;
+    }
+    .contact-heading { font-size: clamp(28px, 8vw, 36px); line-height: 1.3; }
+}
+
+@media (max-width: 390px) {
+    .mobile-header-tools { min-width: 0; }
+    .header-logo,
+    .header-logo-image { width: 100px; }
+    .form-row { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 }
 
 main.product-detail-redesign .pd-social a:nth-child(4) {

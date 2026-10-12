@@ -53,43 +53,56 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 /* NEXT/PREV SANPHAM */
-document.querySelectorAll('.product-swiper').forEach((el) => {
-    el.swiperInstance = new Swiper(el, {
-        slidesPerView: 5,
-        slidesPerGroup: 1,
-        spaceBetween: 20,
-        grid: {
-            rows: 1,
-            fill: 'row',
-        },
-        navigation: {
-            nextEl: el.closest('.product-slider-wrap').querySelector('.product-next'),
-            prevEl: el.closest('.product-slider-wrap').querySelector('.product-prev'),
-        },
-        on: {
-            init: function () {
-                //
+(function () {
+    const productSwipers = document.querySelectorAll('.product-swiper');
+    const mobileGrid = window.matchMedia('(max-width: 700px)');
+
+    function configureProductSwipers() {
+        productSwipers.forEach((el) => {
+            const currentSwiper = el.swiperInstance || el.swiper;
+            if (mobileGrid.matches) {
+                if (currentSwiper && !currentSwiper.destroyed) currentSwiper.destroy(true, true);
+                el.swiperInstance = null;
+                return;
             }
-        },
-        breakpoints: {
-            0: {
-                slidesPerView: 2,
-                slidesPerGroup: 4,
-                spaceBetween: 12,
-                grid: { rows: 2, fill: 'row' },
-            },
-            576: {
-                slidesPerView: 2,
-                slidesPerGroup: 2,
-                spaceBetween: 16,
-                grid: { rows: 1, fill: 'row' },
-            },
-            768: { slidesPerView: 3, slidesPerGroup: 1, spaceBetween: 18},
-            1100: { slidesPerView: 4, slidesPerGroup: 1, spaceBetween: 20},
-            1200: { slidesPerView: 5, slidesPerGroup: 1, spaceBetween: 20},
-        }
-    });
-});
+            if (currentSwiper && !currentSwiper.destroyed) return;
+
+            el.swiperInstance = new Swiper(el, {
+                slidesPerView: 5,
+                slidesPerGroup: 1,
+                spaceBetween: 20,
+                grid: {
+                    rows: 1,
+                    fill: 'row',
+                },
+                navigation: {
+                    nextEl: el.closest('.product-slider-wrap').querySelector('.product-next'),
+                    prevEl: el.closest('.product-slider-wrap').querySelector('.product-prev'),
+                },
+                breakpoints: {
+                    0: {
+                        slidesPerView: 2,
+                        slidesPerGroup: 2,
+                        spaceBetween: 12,
+                        grid: { rows: 1, fill: 'row' },
+                    },
+                    576: {
+                        slidesPerView: 2,
+                        slidesPerGroup: 2,
+                        spaceBetween: 16,
+                        grid: { rows: 1, fill: 'row' },
+                    },
+                    768: { slidesPerView: 3, slidesPerGroup: 1, spaceBetween: 18 },
+                    1100: { slidesPerView: 4, slidesPerGroup: 1, spaceBetween: 20 },
+                    1200: { slidesPerView: 5, slidesPerGroup: 1, spaceBetween: 20 },
+                }
+            });
+        });
+    }
+
+    configureProductSwipers();
+    mobileGrid.addEventListener('change', configureProductSwipers);
+})();
 /* VIEW ALL NEWS */
 const newsUpdateMessage = document.getElementById('newsUpdateMessage');
 const btnToggleNews = document.getElementById('btnToggleNews');
@@ -128,47 +141,51 @@ document.querySelectorAll('.faq-list').forEach(function (list) {
     });
 });
 
-/* RESPONSIVE HEADER: category drawer and compact search */
+/* RESPONSIVE HEADER: navigation drawer and compact search */
 (function () {
     const header = document.querySelector('.site-header');
     const menuButton = document.querySelector('.mobile-menu-toggle');
-    const categoryPanel = document.getElementById('mobile-category-panel');
+    const navigationPanel = document.getElementById('mobile-category-panel');
     const searchButton = document.querySelector('.mobile-search-toggle');
     if (!header) return;
 
-    function closeCategoryMenu() {
-        if (!menuButton || !categoryPanel) return;
+    function closeNavigationMenu() {
+        if (!menuButton || !navigationPanel) return;
         menuButton.setAttribute('aria-expanded', 'false');
-        menuButton.setAttribute('aria-label', 'Mở danh mục sản phẩm');
+        menuButton.setAttribute('aria-label', 'Mở menu điều hướng');
         menuButton.querySelector('i')?.classList.replace('bi-x-lg', 'bi-list');
-        categoryPanel.hidden = true;
+        navigationPanel.hidden = true;
     }
 
     menuButton?.addEventListener('click', function () {
         const opening = this.getAttribute('aria-expanded') !== 'true';
         this.setAttribute('aria-expanded', String(opening));
-        this.setAttribute('aria-label', opening ? 'Đóng danh mục sản phẩm' : 'Mở danh mục sản phẩm');
+        this.setAttribute('aria-label', opening ? 'Đóng menu điều hướng' : 'Mở menu điều hướng');
         this.querySelector('i')?.classList.toggle('bi-list', !opening);
         this.querySelector('i')?.classList.toggle('bi-x-lg', opening);
-        if (categoryPanel) categoryPanel.hidden = !opening;
+        if (navigationPanel) navigationPanel.hidden = !opening;
         header.classList.remove('mobile-search-open');
         searchButton?.setAttribute('aria-expanded', 'false');
+    });
+
+    navigationPanel?.addEventListener('click', function (event) {
+        if (event.target.closest('a')) closeNavigationMenu();
     });
 
     searchButton?.addEventListener('click', function () {
         const opening = !header.classList.contains('mobile-search-open');
         header.classList.toggle('mobile-search-open', opening);
         this.setAttribute('aria-expanded', String(opening));
-        closeCategoryMenu();
+        closeNavigationMenu();
         if (opening) header.querySelector('.header-search-input')?.focus();
     });
 
     document.addEventListener('click', function (event) {
-        if (categoryPanel && !header.contains(event.target)) closeCategoryMenu();
+        if (navigationPanel && !header.contains(event.target)) closeNavigationMenu();
     });
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
-            closeCategoryMenu();
+            closeNavigationMenu();
             header.classList.remove('mobile-search-open');
             searchButton?.setAttribute('aria-expanded', 'false');
         }
