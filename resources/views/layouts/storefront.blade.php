@@ -142,7 +142,16 @@
                 <div class="footer-block">
                     <h4 class="footer-heading blue">Bản đồ</h4>
                     <p class="footer-map-desc">Vị trí văn phòng IBP Technology tại Thủ Đức, TP. Hồ Chí Minh.</p>
-                    <div class="footer-map"><iframe src="https://www.google.com/maps?q=198+A1,+Khu+đô+thị+mới+Đông+Tăng+Long,+Long+Phước,+Hồ+Chí+Minh,+Việt+Nam&output=embed" width="400" height="171" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+                    <div class="footer-map">
+                        <iframe src="https://www.google.com/maps?q=198+A1,+Khu+đô+thị+mới+Đông+Tăng+Long,+Long+Phước,+Hồ+Chí+Minh,+Việt+Nam&output=embed" 
+                            width="400" 
+                            height="171" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
                 </div>
             </div>
         </div>
