@@ -147,7 +147,7 @@
             </div>
         </div>
     </div>
-    <div class="footer-bottom"><div class="footer-bottom-inner">© {{ date('Y') }} IBP Technology Co., Ltd.</div></div>
+    <div class="footer-bottom"><div class="footer-bottom-inner">Copyright is registered © {{ date('Y') }} IBP Technology Co., Ltd.</div></div>
 </footer>
 <script src="{{ asset('assets/js/fancybox.umd.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js"></script>
