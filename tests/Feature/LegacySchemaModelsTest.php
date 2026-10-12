@@ -165,8 +165,133 @@ class LegacySchemaModelsTest extends TestCase
             ->assertSee('Water filter A2')
             ->assertSee('Xem chi tiết thông số kỹ thuật')
             ->assertSee('Tặng thiết bị kiểm tra độ tinh khiết của nước TDS')
-            ->assertSee('Replacement filter');
+            ->assertSee('Replacement filter')
+            ->assertSee('CÂU HỎI THƯỜNG GẶP')
+            ->assertSee('How long is the warranty?')
+            ->assertSee('ĐĂNG KÝ TƯ VẤN')
+            ->assertSee('SẢN PHẨM ĐÃ XEM')
+            ->assertSee(route('products.consultation', ['slug' => 'filter-a2']))
+            ->assertSee('href="'.route('products.show', ['slug' => 'filter-a2']).'"', false);
         $this->assertSame(1, $product->fresh()->luot_xem);
+    }
+
+    public function test_product_detail_shows_category_faqs_when_no_product_faqs_exist(): void
+    {
+        $this->createLegacySchema();
+
+        foreach (config('store.categories') as $category) {
+            $product = Product::create([
+                'slug' => 'faq-'.substr(sha1($category), 0, 10),
+                'ten' => 'FAQ '.$category,
+                'danh_muc' => $category,
+                'hien_thi' => true,
+            ]);
+
+            $response = $this->get(route('products.show', ['slug' => $product->slug]))
+                ->assertOk()
+                ->assertSee('CÂU HỎI THƯỜNG GẶP');
+            $this->assertSame(5, substr_count($response->getContent(), 'class="faq-item"'));
+        }
+
+        $products = collect([
+            ['slug' => 'water-faq', 'ten' => 'Water filter', 'danh_muc' => 'Máy lọc nước'],
+            ['slug' => 'air-faq', 'ten' => 'Air purifier', 'danh_muc' => 'Máy lọc không khí'],
+            ['slug' => 'unknown-faq', 'ten' => 'Other product', 'danh_muc' => 'Khác'],
+        ])->map(fn (array $attributes) => Product::create($attributes + ['hien_thi' => true]));
+
+        $this->get(route('products.show', ['slug' => 'water-faq']))
+            ->assertOk()
+            ->assertSee('Bao lâu cần thay lõi lọc?')
+            ->assertSee('Sản phẩm này phù hợp với nguồn nước');
+        $this->get(route('products.show', ['slug' => 'air-faq']))
+            ->assertOk()
+            ->assertSee('Máy phù hợp với diện tích phòng bao nhiêu?')
+            ->assertSee('vệ sinh hoặc thay bộ lọc');
+        $this->get(route('products.show', ['slug' => 'unknown-faq']))
+            ->assertOk()
+            ->assertSee('Làm sao để chọn sản phẩm phù hợp?');
+
+        $this->assertDatabaseCount('product_faq', 0);
+    }
+
+    public function test_recently_viewed_products_follow_visit_order_and_keep_the_latest_four(): void
+    {
+        $this->createLegacySchema();
+        $products = collect(range(1, 5))->map(fn (int $number) => Product::create([
+            'slug' => 'viewed-filter-'.$number,
+            'ten' => 'Viewed filter '.$number,
+            'gia' => $number * 1000,
+            'hien_thi' => true,
+        ]));
+
+        foreach ($products as $product) {
+            $this->get(route('products.show', ['slug' => $product->slug]))->assertOk();
+        }
+
+        $latestResponse = $this->get(route('products.show', ['slug' => 'viewed-filter-3']))
+            ->assertOk()
+            ->assertSee('SẢN PHẨM ĐÃ XEM');
+        $content = $latestResponse->getContent();
+        $sectionStart = strpos($content, '<section class="detail-card pd-viewed"');
+        $sectionEnd = strpos($content, '</section>', $sectionStart);
+        $recentSection = substr($content, $sectionStart, $sectionEnd - $sectionStart);
+        $positions = array_map(
+            static fn (int $number): int|false => strpos($recentSection, 'Viewed filter '.$number),
+            [3, 5, 4, 2],
+        );
+
+        $this->assertSame([true, true, true, true], array_map(
+            static fn (int|false $position): bool => $position !== false,
+            $positions,
+        ));
+        $this->assertLessThan($positions[1], $positions[0]);
+        $this->assertLessThan($positions[2], $positions[1]);
+        $this->assertLessThan($positions[3], $positions[2]);
+        $this->assertStringNotContainsString('Viewed filter 1', $recentSection);
+    }
+
+    public function test_product_consultation_is_saved_for_the_product_and_returns_to_its_detail(): void
+    {
+        $this->createLegacySchema();
+        $product = Product::create([
+            'slug' => 'consult-filter',
+            'ten' => 'Consult filter',
+            'hien_thi' => true,
+        ]);
+
+        $this->post(route('products.consultation', ['slug' => $product->slug]), [
+            'name' => 'Test customer',
+            'phone' => '0900000000',
+            'email' => 'test@example.com',
+            'message' => 'Please advise on this product',
+        ])->assertRedirect(route('products.show', ['slug' => $product->slug]))
+            ->assertSessionHas('contact_sent', true);
+
+        $consultation = CustomerConsultation::query()->firstOrFail();
+        $this->assertSame($product->id, $consultation->product_id);
+        $this->assertSame('Test customer', $consultation->ho_ten);
+        $this->assertStringContainsString('Sản phẩm quan tâm: Consult filter', $consultation->noi_dung);
+        $this->assertStringContainsString('Please advise on this product', $consultation->noi_dung);
+    }
+
+    public function test_demo_product_consultation_never_stores_submitted_personal_data(): void
+    {
+        config()->set('store.demo_mode', true);
+        $this->createLegacySchema();
+        $product = Product::create([
+            'slug' => 'demo-consult-filter',
+            'ten' => 'Demo consult filter',
+            'hien_thi' => true,
+        ]);
+
+        $this->post(route('products.consultation', ['slug' => $product->slug]), [
+            'name' => 'Private demo customer',
+            'phone' => '0900000000',
+            'email' => 'private@example.com',
+        ])->assertRedirect(route('products.show', ['slug' => $product->slug]))
+            ->assertSessionHas('contact_demo_notice', true);
+
+        $this->assertDatabaseCount('customer_consultations', 0);
     }
 
     public function test_product_detail_returns_not_found_for_hidden_or_missing_products(): void

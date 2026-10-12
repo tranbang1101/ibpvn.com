@@ -58,7 +58,9 @@
                 </div>
             </div>
             <div class="pd-summary">
-                @php($rating = max(0, min(5, (int) round((float) $product->rating))))
+                @php
+                    $rating = max(0, min(5, (int) round((float) $product->rating)));
+                @endphp
                 <div class="pd-title-row"><div><h1>{{ $product->ten }}</h1></div><div class="pd-sold">Đã bán: <b>{{ number_format((int) $product->da_ban) }}</b><span class="pd-top-stars">★</span> ({{ number_format((float) $product->rating, 1) }})</div></div>
                 <div class="pd-brand-rating"><span>Thương hiệu: <a href="#product-information">{{ $product->thuong_hieu ?: '—' }}</a></span><i></i><span class="pd-stars">{{ str_repeat('★', $rating) }}{{ str_repeat('☆', 5 - $rating) }}</span><a href="#reviews">{{ (int) $product->so_danh_gia }} đánh giá</a></div>
                 <div class="pd-price-line"><span>Giá:</span><strong data-unit-price="{{ (int) $currentPrice }}">{{ number_format($currentPrice, 0, ',', '.') }}₫</strong>@if($discount)<del>{{ number_format($originalPrice, 0, ',', '.') }}₫</del><em>-{{ $discount }}%</em><span class="pd-price-savings" data-price-savings>Tiết kiệm: {{ number_format($originalPrice - $currentPrice, 0, ',', '.') }}₫</span>@endif</div>
@@ -111,7 +113,9 @@
                             <button class="pd-addon-arrow is-prev" type="button" data-addon-prev aria-label="Phụ kiện trước"><i class="bi bi-chevron-left"></i></button>
                             <div class="pd-addon-track" data-addon-track>
                                 @forelse($product->addons as $addon)
-                                    @php($addonPrice = (float) ($addon->gia_khuyen_mai ?: $addon->gia_goc))
+                                    @php
+                                        $addonPrice = (float) ($addon->gia_khuyen_mai ?: $addon->gia_goc);
+                                    @endphp
                                     <article class="pd-addon" data-addon-card data-addon-id="{{ $addon->id }}" data-addon-price="{{ (int) $addonPrice }}" data-addon-old-price="{{ (int) $addon->gia_goc }}">
                                         <img src="{{ $assetPath($addon->image_url ?: '/assets/images/loiloc.png') }}" alt="{{ $addon->ten }}"><b>{{ $addon->ten }}</b><button type="button" class="pd-addon-toggle" aria-pressed="false">CHỌN</button><strong>{{ number_format($addonPrice, 0, ',', '.') }}₫</strong>
                                     </article>
@@ -158,10 +162,60 @@
                 </section>
             </div>
             <aside class="pd-sidebar">
+                <section class="pd-consult-card detail-card" aria-labelledby="pd-consult-heading">
+                    <h2 id="pd-consult-heading">ĐĂNG KÝ TƯ VẤN</h2>
+                    @if(session('contact_sent'))
+                        <p class="pd-consult-feedback" role="status">Đã nhận đăng ký. IBP sẽ liên hệ tư vấn sản phẩm này sớm nhất.</p>
+                    @elseif(session('contact_demo_notice'))
+                        <p class="pd-consult-feedback" role="status">Đây là bản demo; thông tin tư vấn chưa được gửi hoặc lưu.</p>
+                    @endif
+                    @if(session('contact_error'))
+                        <p class="pd-consult-feedback" role="alert">{{ session('contact_error') }}</p>
+                    @endif
+                    @if($errors->any())
+                        <p class="pd-consult-feedback" role="alert">{{ $errors->first() }}</p>
+                    @endif
+                    <form method="post" action="{{ route('products.consultation', ['slug' => $product->slug]) }}">
+                        @csrf
+                        <input name="name" value="{{ old('name') }}" autocomplete="name" maxlength="150" placeholder="Họ và tên*" aria-label="Họ và tên" required>
+                        <input type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" maxlength="25" placeholder="Số điện thoại*" aria-label="Số điện thoại" required>
+                        <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" maxlength="190" placeholder="Email*" aria-label="Email" required>
+                        <textarea name="message" rows="3" maxlength="5000" placeholder="Nội dung" aria-label="Nội dung">{{ old('message') }}</textarea>
+                        <button type="submit">ĐĂNG KÝ</button>
+                    </form>
+                </section>
+                <section class="detail-card pd-viewed" aria-labelledby="pd-viewed-heading">
+                    <h2 id="pd-viewed-heading">SẢN PHẨM ĐÃ XEM</h2>
+                    @foreach($viewedProducts as $viewedProduct)
+                        @php
+                            $viewedImage = trim((string) $viewedProduct->anh_chinh);
+                            if (str_starts_with($viewedImage, '/ibpvn.com/')) {
+                                $viewedImage = substr($viewedImage, strlen('/ibpvn.com/'));
+                            }
+                        @endphp
+                        <a href="{{ route('products.show', ['slug' => $viewedProduct->slug]) }}">
+                            <img src="{{ $viewedImage !== '' ? $assetPath($viewedImage) : asset('assets/images/sanpham.png') }}" alt="">
+                            <span>{{ $viewedProduct->ten }}<b>{{ number_format((float) ($viewedProduct->gia_khuyen_mai ?: $viewedProduct->gia), 0, ',', '.') }}₫</b></span>
+                        </a>
+                    @endforeach
+                </section>
                 <section class="detail-card pd-why"><h2>VÌ SAO BẠN NÊN CHỌN IBP TECHNOLOGY</h2><ul><li><i class="bi bi-patch-check"></i> Sản phẩm chính hãng</li><li><i class="bi bi-tools"></i> Hỗ trợ kỹ thuật</li><li><i class="bi bi-shield-check"></i> Hỗ trợ bảo hành theo chính sách</li><li><i class="bi bi-truck"></i> Tư vấn giao hàng trên toàn quốc</li></ul></section>
-                @if($product->faqs->isNotEmpty())
-                    <section class="detail-card pd-faq-card"><h2>CÂU HỎI THƯỜNG GẶP</h2><ul class="faq-list">@foreach($product->faqs as $index => $faq)<li class="faq-item"><button class="faq-question" type="button" aria-expanded="false" aria-controls="product-faq-{{ $index }}"><i class="bi bi-plus-circle" aria-hidden="true"></i><span>{{ $faq->cau_hoi }}</span></button><div class="faq-answer" id="product-faq-{{ $index }}" hidden><p>{{ $faq->cau_tra_loi }}</p></div></li>@endforeach</ul></section>
-                @endif
+                <section class="detail-card pd-faq-card">
+                    <h2>CÂU HỎI THƯỜNG GẶP</h2>
+                    <ul class="faq-list pd-faq-list">
+                        @foreach($faqs as $index => $faq)
+                            <li class="faq-item">
+                                <button class="faq-question" type="button" aria-expanded="false" aria-controls="product-faq-{{ $index }}">
+                                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                                    <span>{{ data_get($faq, 'cau_hoi') }}</span>
+                                </button>
+                                <div class="faq-answer" id="product-faq-{{ $index }}" hidden>
+                                    <p>{{ data_get($faq, 'cau_tra_loi') }}</p>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
             </aside>
         </section>
         <section class="pd-similar" aria-labelledby="similar-products-title">

@@ -16,6 +16,9 @@ Route::get('/products', [StorefrontController::class, 'catalog'])->name('product
 Route::get('/products/{slug}', [ProductController::class, 'show'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('products.show');
+Route::post('/products/{slug}/consultation', [ContactController::class, 'storeProductConsultation'])
+    ->where('slug', '[A-Za-z0-9-]+')
+    ->name('products.consultation');
 Route::get('/product/detail.php', [ProductController::class, 'showLegacyId'])->name('products.legacy');
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');

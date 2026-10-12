@@ -36,16 +36,44 @@ class ContactController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        return $this->submit($request);
+    }
+
+    public function storeProductConsultation(Request $request, string $slug): RedirectResponse
+    {
+        try {
+            $product = Product::query()
+                ->where('hien_thi', true)
+                ->where('slug', $slug)
+                ->firstOrFail();
+        } catch (QueryException $exception) {
+            Log::error('Laravel product consultation could not load its product.', [
+                'slug' => $slug,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return response()->view('storefront.product-unavailable', [
+                'loadError' => true,
+            ], 503);
+        }
+
+        return $this->submit($request, $product);
+    }
+
+    private function submit(Request $request, ?Product $contextProduct = null): RedirectResponse
+    {
         if (config('store.demo_mode')) {
-            return redirect()
-                ->route('contact', ['topic' => $request->query('topic')])
-                ->with('contact_demo_notice', true);
+            $redirect = $contextProduct
+                ? redirect()->route('products.show', ['slug' => $contextProduct->slug])
+                : redirect()->route('contact', ['topic' => $request->query('topic')]);
+
+            return $redirect->with('contact_demo_notice', true);
         }
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'phone' => ['required', 'string', 'max:25', 'regex:/^[0-9+().\-\s]+$/'],
-            'email' => ['nullable', 'email', 'max:190'],
+            'email' => [$contextProduct ? 'required' : 'nullable', 'email', 'max:190'],
             'product' => ['nullable', 'string', Rule::in(array_keys(config('store.categories')))],
             'product_id' => ['nullable', 'integer', 'min:1'],
             'message' => ['nullable', 'string', 'max:5000'],
@@ -53,9 +81,9 @@ class ContactController extends Controller
         ]);
 
         try {
-            $productId = null;
+            $productId = $contextProduct?->id;
             if (! empty($data['product_id'])) {
-                $productId = Product::query()
+                $productId ??= Product::query()
                     ->whereKey($data['product_id'])
                     ->where('hien_thi', true)
                     ->value('id');
@@ -67,6 +95,9 @@ class ContactController extends Controller
             }
             if (! empty($data['topic'])) {
                 $details[] = 'Chủ đề: '.(self::TOPICS[$data['topic']] ?? '');
+            }
+            if ($contextProduct) {
+                $details[] = 'Sản phẩm quan tâm: '.$contextProduct->ten;
             }
             if (! empty($data['message'])) {
                 $details[] = $data['message'];
@@ -87,6 +118,12 @@ class ContactController extends Controller
             return back()
                 ->withInput()
                 ->with('contact_error', 'Chưa thể lưu yêu cầu lúc này. Vui lòng gọi 0983 537 155 để được hỗ trợ.');
+        }
+
+        if ($contextProduct) {
+            return redirect()
+                ->route('products.show', ['slug' => $contextProduct->slug])
+                ->with('contact_sent', true);
         }
 
         return redirect()

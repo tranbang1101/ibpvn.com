@@ -37,6 +37,40 @@ class ProductController extends Controller
         }
 
         abort_unless($product, 404);
+        $faqs = $product->faqs->isNotEmpty()
+            ? $product->faqs
+            : collect(config('product_faqs.'.$product->danh_muc, config('product_faqs.default')));
+        $viewedIds = collect(session('viewed_products', []))
+            ->filter(static fn ($id): bool => filter_var($id, FILTER_VALIDATE_INT) !== false && (int) $id > 0)
+            ->reject(static fn ($id): bool => (int) $id === (int) $product->id)
+            ->prepend($product->id)
+            ->unique()
+            ->take(4)
+            ->values();
+        session(['viewed_products' => $viewedIds->all()]);
+
+        try {
+            $viewedProductsById = Product::query()
+                ->where('hien_thi', true)
+                ->whereIn('id', $viewedIds)
+                ->get()
+                ->keyBy('id');
+        } catch (QueryException $exception) {
+            Log::error('Laravel recently viewed products could not be loaded.', [
+                'product_id' => $product->id,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return response()->view('storefront.product-unavailable', [
+                'loadError' => true,
+            ], 503);
+        }
+
+        $viewedProducts = $viewedIds
+            ->map(static fn ($id) => $viewedProductsById->get($id))
+            ->filter()
+            ->values();
+
         if (! config('store.demo_mode')) {
             $product->increment('luot_xem');
         }
@@ -85,10 +119,12 @@ class ProductController extends Controller
 
         return view('storefront.product', [
             'product' => $product,
+            'faqs' => $faqs,
             'origin' => $origin,
             'specifications' => $specifications,
             'imageUrls' => $imageUrls,
             'similarProducts' => $similarProducts,
+            'viewedProducts' => $viewedProducts,
         ]);
     }
 
