@@ -162,6 +162,23 @@
                 </section>
             </div>
             <aside class="pd-sidebar">
+                <section class="detail-card pd-why"><h2>VÌ SAO BẠN NÊN CHỌN IBP TECHNOLOGY</h2><ul><li><i class="bi bi-patch-check"></i> Sản phẩm chính hãng</li><li><i class="bi bi-tools"></i> Hỗ trợ kỹ thuật</li><li><i class="bi bi-shield-check"></i> Hỗ trợ bảo hành theo chính sách</li><li><i class="bi bi-truck"></i> Tư vấn giao hàng trên toàn quốc</li></ul></section>
+                <section class="detail-card pd-faq-card">
+                    <h2>CÂU HỎI THƯỜNG GẶP</h2>
+                    <ul class="faq-list pd-faq-list">
+                        @foreach($faqs as $index => $faq)
+                            <li class="faq-item">
+                                <button class="faq-question" type="button" aria-expanded="false" aria-controls="product-faq-{{ $index }}">
+                                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                                    <span>{{ data_get($faq, 'cau_hoi') }}</span>
+                                </button>
+                                <div class="faq-answer" id="product-faq-{{ $index }}" hidden>
+                                    <p>{{ data_get($faq, 'cau_tra_loi') }}</p>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
                 <section class="pd-consult-card detail-card" aria-labelledby="pd-consult-heading">
                     <h2 id="pd-consult-heading">ĐĂNG KÝ TƯ VẤN</h2>
                     @if(session('contact_sent'))
@@ -198,23 +215,6 @@
                             <span>{{ $viewedProduct->ten }}<b>{{ number_format((float) ($viewedProduct->gia_khuyen_mai ?: $viewedProduct->gia), 0, ',', '.') }}₫</b></span>
                         </a>
                     @endforeach
-                </section>
-                <section class="detail-card pd-why"><h2>VÌ SAO BẠN NÊN CHỌN IBP TECHNOLOGY</h2><ul><li><i class="bi bi-patch-check"></i> Sản phẩm chính hãng</li><li><i class="bi bi-tools"></i> Hỗ trợ kỹ thuật</li><li><i class="bi bi-shield-check"></i> Hỗ trợ bảo hành theo chính sách</li><li><i class="bi bi-truck"></i> Tư vấn giao hàng trên toàn quốc</li></ul></section>
-                <section class="detail-card pd-faq-card">
-                    <h2>CÂU HỎI THƯỜNG GẶP</h2>
-                    <ul class="faq-list pd-faq-list">
-                        @foreach($faqs as $index => $faq)
-                            <li class="faq-item">
-                                <button class="faq-question" type="button" aria-expanded="false" aria-controls="product-faq-{{ $index }}">
-                                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
-                                    <span>{{ data_get($faq, 'cau_hoi') }}</span>
-                                </button>
-                                <div class="faq-answer" id="product-faq-{{ $index }}" hidden>
-                                    <p>{{ data_get($faq, 'cau_tra_loi') }}</p>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
                 </section>
             </aside>
         </section>

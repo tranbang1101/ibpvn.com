@@ -160,7 +160,7 @@ class LegacySchemaModelsTest extends TestCase
         $this->get(route('products.index', ['category' => 'may-loc-nuoc']))
             ->assertOk()
             ->assertSee('Water filter A2');
-        $this->get(route('products.show', ['slug' => 'filter-a2']))
+        $detailResponse = $this->get(route('products.show', ['slug' => 'filter-a2']))
             ->assertOk()
             ->assertSee('Water filter A2')
             ->assertSee('Xem chi tiết thông số kỹ thuật')
@@ -172,6 +172,10 @@ class LegacySchemaModelsTest extends TestCase
             ->assertSee('SẢN PHẨM ĐÃ XEM')
             ->assertSee(route('products.consultation', ['slug' => 'filter-a2']))
             ->assertSee('href="'.route('products.show', ['slug' => 'filter-a2']).'"', false);
+        $sidebar = substr($detailResponse->getContent(), strpos($detailResponse->getContent(), '<aside class="pd-sidebar">'));
+        $this->assertLessThan(strpos($sidebar, 'pd-faq-card'), strpos($sidebar, 'pd-why'));
+        $this->assertLessThan(strpos($sidebar, 'pd-consult-card'), strpos($sidebar, 'pd-faq-card'));
+        $this->assertLessThan(strpos($sidebar, 'pd-viewed'), strpos($sidebar, 'pd-consult-card'));
         $this->assertSame(1, $product->fresh()->luot_xem);
     }
 
