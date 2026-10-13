@@ -114,8 +114,8 @@
                     <ul class="footer-contact-list">
                         <li><strong>Hotline:</strong> +84 983 537 155</li>
                         <li><strong>Email:</strong> info@ibpvn.com</li>
-                        <li><strong>Địa chỉ:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
-                        <li><strong>Văn phòng:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
+                        <li><strong>Address:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
+                        <li><strong>Office:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
                     </ul>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                     <h4 class="footer-heading blue">Chính sách</h4>
                     <ul class="footer-menu">
                         @foreach(['warranty' => 'bảo hành', 'insurance' => 'bảo hiểm', 'refund' => 'hoàn tiền', 'promotion' => 'khuyến mãi'] as $topic => $name)
-                            <li><a href="{{ route('contact', ['topic' => $topic]) }}">Hỏi về chính sách {{ $name }}</a></li>
+                            <li><a href="{{ route('contact', ['topic' => $topic]) }}">Chính sách {{ $name }}</a></li>
                         @endforeach
                     </ul>
                 </div>
