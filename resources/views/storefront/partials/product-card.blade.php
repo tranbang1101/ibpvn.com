@@ -19,8 +19,8 @@
     <a class="product-card-image" href="{{ $productUrl }}">
         <img src="{{ asset($image) }}" alt="{{ $product->ten }}" loading="lazy">
         @if($discount > 0)
-            <span class="badge-hot">Ưu đãi</span>
-            <span class="badge-discount" aria-label="Ưu đãi"></span>
+            <span class="badge-hot">HOT</span>
+            <span class="badge-discount" data-discount="-{{ $discount }}%" aria-label="Giảm {{ $discount }}%"></span>
         @endif
     </a>
     <div class="product-card-body">
@@ -31,12 +31,17 @@
                 <del class="price-old">{{ number_format($originalPrice, 0, ',', '.') }}₫</del>
             @endif
         </div>
-        @if(!empty($showDescription))
-            <div class="product-card-desc">{{ $product->mo_ta_ngan }}</div>
-        @endif
+        <div class="product-card-desc">{{ $product->mo_ta_ngan ?: 'Thông tin sản phẩm đang được cập nhật.' }}</div>
         <div class="product-card-meta">
-            <span class="meta-item rating"><strong>{{ number_format((float) $product->rating, 1) }}</strong><i class="bi bi-star-fill"></i><span class="review-count">({{ (int) $product->so_danh_gia }})</span></span>
-            <span class="meta-item">Đã bán {{ number_format((int) $product->da_ban) }}</span>
+            <span class="meta-item views product-card-views" aria-label="{{ number_format((int) $product->luot_xem) }} lượt xem">
+                <i class="bi bi-eye" aria-hidden="true"></i><span>{{ number_format((int) $product->luot_xem) }}</span>
+            </span>
+            <span class="meta-item rating" aria-label="Đánh giá {{ number_format((float) $product->rating, 1) }} sao, {{ number_format((int) $product->so_danh_gia) }} đánh giá">
+                <strong>{{ number_format((float) $product->rating, 1) }}</strong><i class="bi bi-star-fill" aria-hidden="true"></i><span class="review-count">({{ number_format((int) $product->so_danh_gia) }})</span>
+            </span>
+            <span class="meta-item favorites product-card-favorites" aria-label="{{ number_format((int) $product->luot_yeu_thich) }} lượt yêu thích">
+                <i class="bi bi-heart" aria-hidden="true"></i><strong>{{ number_format((int) $product->luot_yeu_thich) }}</strong>
+            </span>
         </div>
         <div class="product-card-actions">
             <form method="post" action="{{ route('cart.add') }}" class="card-cart-form">
@@ -44,7 +49,7 @@
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <button type="submit" class="btn-add-cart">Thêm vào giỏ</button>
             </form>
-            <a href="{{ $productUrl }}" class="btn-buy-now">Mua Ngay</a>
+            <a href="{{ $productUrl }}" class="btn-buy-now">Mua ngay</a>
         </div>
     </div>
 </article>

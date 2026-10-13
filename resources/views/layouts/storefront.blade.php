@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/fancybox.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v=11') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/shop.css?v=12') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=19') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v=12') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/shop.css?v=13') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=20') }}">
     @if(config('store.demo_mode'))
         <link rel="stylesheet" href="{{ asset('assets/css/demo.css?v=1') }}">
     @endif
@@ -114,8 +114,8 @@
                     <ul class="footer-contact-list">
                         <li><strong>Hotline:</strong> +84 983 537 155</li>
                         <li><strong>Email:</strong> info@ibpvn.com</li>
-                        <li><strong>Address:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
-                        <li><strong>Office:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
+                        <li><strong>Địa chỉ:</strong> B54 Park Riverside, 101 Bưng Ông Thoàn, Phú Hữu, TP. Thủ Đức, TP. Hồ Chí Minh</li>
+                        <li><strong>Văn phòng:</strong> 198 đường N7, KĐT Đông Tăng Long, phường Trường Thạnh, TP. Thủ Đức</li>
                     </ul>
                 </div>
             </div>
@@ -132,36 +132,22 @@
                     <h4 class="footer-heading blue">Chính sách</h4>
                     <ul class="footer-menu">
                         @foreach(['warranty' => 'bảo hành', 'insurance' => 'bảo hiểm', 'refund' => 'hoàn tiền', 'promotion' => 'khuyến mãi'] as $topic => $name)
-                            <li><a href="{{ route('contact', ['topic' => $topic]) }}">Chính sách {{ $name }}</a></li>
+                            <li><a href="{{ route('contact', ['topic' => $topic]) }}">Hỏi về chính sách {{ $name }}</a></li>
                         @endforeach
                     </ul>
                 </div>
             </div>
             <div class="footer-col footer-social">
-                <div class="footer-block">
-                    <h4 class="footer-heading blue">Fanpage</h4>
-                    <div class="footer-fanpage">
-                        <img src="{{ asset('assets/images/fanpage.png') }}" alt="Fanpage">
-                    </div>
-                </div>
+                <div class="footer-block"><h4 class="footer-heading blue">Fanpage</h4><div class="footer-fanpage"><img src="{{ asset('assets/images/fanpage.png') }}" alt="Fanpage"></div></div>
                 <div class="footer-block">
                     <h4 class="footer-heading blue">Bản đồ</h4>
                     <p class="footer-map-desc">Vị trí văn phòng IBP Technology tại Thủ Đức, TP. Hồ Chí Minh.</p>
-                    <div class="footer-map">
-                        <iframe src="https://www.google.com/maps?q=198+A1,+Khu+đô+thị+mới+Đông+Tăng+Long,+Long+Phước,+Hồ+Chí+Minh,+Việt+Nam&output=embed" 
-                            width="400" 
-                            height="171" 
-                            style="border:0;" 
-                            allowfullscreen="" 
-                            loading="lazy" 
-                            referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
+                    <div class="footer-map"><iframe src="https://www.google.com/maps?q=198+%C4%91%C6%B0%E1%BB%9Dng+N7,+K%C4%90T+%C4%90%C3%B4ng+T%C4%83ng+Long,+Tr%C6%B0%E1%BB%9Dng+Th%E1%BA%A1nh,+Th%E1%BB%A7+%C4%90%E1%BB%A9c,+H%E1%BB%93+Ch%C3%AD+Minh&output=embed" width="400" height="171" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="footer-bottom"><div class="footer-bottom-inner">Copyright is registered © {{ date('Y') }} IBP Technology Co., Ltd | IBP Technology</div></div>
+    <div class="footer-bottom"><div class="footer-bottom-inner">Copyright is registered © {{ date('Y') }} IBP Technology Co., Ltd.</div></div>
 </footer>
 <script src="{{ asset('assets/js/fancybox.umd.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.js"></script>

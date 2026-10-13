@@ -124,8 +124,10 @@ class LegacySchemaModelsTest extends TestCase
             'gia_khuyen_mai' => 1100000,
             'mo_ta_ngan' => 'A sample water filter',
             'anh_chinh' => '/assets/images/sanpham.png',
+            'luot_xem' => 100,
             'rating' => 4.8,
             'so_danh_gia' => 5,
+            'luot_yeu_thich' => 342,
             'hien_thi' => true,
         ]);
         ProductDetail::create([
@@ -164,7 +166,16 @@ class LegacySchemaModelsTest extends TestCase
             ->assertSee('Giới Thiệu')
             ->assertSee('Dịch Vụ')
             ->assertSee('Cẩm Nang')
-            ->assertSee('Liên Hệ');
+            ->assertSee('Liên Hệ')
+            ->assertSee('A sample water filter')
+            ->assertSee('class="badge-hot"', false)
+            ->assertSee('data-discount="-8%"', false)
+            ->assertSee('product-card-views', false)
+            ->assertSee('bi-eye', false)
+            ->assertSee('product-card-favorites', false)
+            ->assertSee('bi-heart', false)
+            ->assertSee('Mua ngay')
+            ->assertSee('342');
         $mobileNavigation = substr(
             $homeResponse->getContent(),
             strpos($homeResponse->getContent(), '<nav class="mobile-navigation-panel mobile-category-panel"'),
@@ -174,7 +185,10 @@ class LegacySchemaModelsTest extends TestCase
         $this->assertStringNotContainsString('Máy lọc nước', $mobileNavigation);
         $this->get(route('products.index', ['category' => 'may-loc-nuoc']))
             ->assertOk()
-            ->assertSee('Water filter A2');
+            ->assertSee('Water filter A2')
+            ->assertSee('A sample water filter')
+            ->assertSee('product-card-views', false)
+            ->assertSee('product-card-favorites', false);
         $detailResponse = $this->get(route('products.show', ['slug' => 'filter-a2']))
             ->assertOk()
             ->assertSee('Water filter A2')
@@ -191,7 +205,7 @@ class LegacySchemaModelsTest extends TestCase
         $this->assertLessThan(strpos($sidebar, 'pd-faq-card'), strpos($sidebar, 'pd-why'));
         $this->assertLessThan(strpos($sidebar, 'pd-consult-card'), strpos($sidebar, 'pd-faq-card'));
         $this->assertLessThan(strpos($sidebar, 'pd-viewed'), strpos($sidebar, 'pd-consult-card'));
-        $this->assertSame(1, $product->fresh()->luot_xem);
+        $this->assertSame(101, $product->fresh()->luot_xem);
     }
 
     public function test_product_detail_shows_category_faqs_when_no_product_faqs_exist(): void
