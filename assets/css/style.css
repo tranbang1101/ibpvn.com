@@ -879,8 +879,8 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     overflow: hidden;
     z-index: 5;
     pointer-events: none;
@@ -888,20 +888,22 @@
 .badge-discount::after {
     content: attr(data-discount);
     position: absolute;
-    color: #FFFFFF;
-    right: -28px;
     top: 12px;
-    width: 100%;
-    max-width: 110px;
-    height: auto;
-    line-height: 28px;
-    font-size: 13px;
-    font-weight: 700;
-    text-align: center;
-    transform: rotate(45deg);
-    display: block;
+    right: -28px;
+    width: 100px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #D7202C;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: center;
     white-space: nowrap;
+    transform: rotate(45deg);
+    transform-origin: center;
 }
 /* Body */
 .product-promo .product-card-body {
