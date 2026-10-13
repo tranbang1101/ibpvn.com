@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/fancybox.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12.2.0/swiper-bundle.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v=12') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css?v=13') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/shop.css?v=13') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/style-responsive.css?v=20') }}">
     @if(config('store.demo_mode'))
