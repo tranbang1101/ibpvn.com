@@ -879,23 +879,29 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 76px;
-    height: 68px;
-    background: #D7202C;
-    clip-path: polygon(100% 0, 0 0, 100% 100%);
-    z-index: 2;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    padding: 12px 8px 0 0;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    z-index: 5;
+    pointer-events: none;
 }
 .badge-discount::after {
-    content: "-10%";
+    content: attr(data-discount);
+    position: absolute;
     color: #FFFFFF;
-    font-size: 12px;
+    right: -28px;
+    top: 12px;
+    width: 100%;
+    max-width: 110px;
+    height: auto;
+    line-height: 28px;
+    font-size: 13px;
     font-weight: 700;
-    transform: rotate(42deg);
+    text-align: center;
+    transform: rotate(45deg);
     display: block;
+    background: #D7202C;
+    white-space: nowrap;
 }
 /* Body */
 .product-promo .product-card-body {
